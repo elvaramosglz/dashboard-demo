@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Demo</title>
+<style>
+  /* ============================================
+     CONFIGURA AQUÍ
+     ============================================ */
+  :root {
+    --color-primario: #2563eb;
+    --color-fondo: #f3f4f6;
+  }
+</style>
+<script>
+  // ============================================
+  // CONFIGURA AQUÍ: usuario y contraseña del demo
+  // ============================================
+  const USUARIO = "demo";
+  const PASSWORD = "demo123";
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+  body { background: var(--color-fondo); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+
+  /* --- Pantalla de login --- */
+  #login-screen {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    width: 320px;
+    text-align: center;
+  }
+  #login-screen h1 { font-size: 20px; margin-bottom: 4px; color: #111; }
+  #login-screen p { font-size: 13px; color: #6b7280; margin-bottom: 20px; }
+  #login-screen input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  #login-screen button {
+    width: 100%;
+    padding: 10px;
+    background: var(--color-primario);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  #login-screen button:hover { opacity: 0.9; }
+  #error-msg { color: #dc2626; font-size: 13px; margin-top: 8px; display: none; }
+
+  /* --- Dashboard --- */
+  #dashboard-screen {
+    display: none;
+    width: 100%;
+    height: 100vh;
+    flex-direction: column;
+  }
+  #dashboard-screen.visible { display: flex; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; background: white; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .header h1 { font-size: 18px; color: #111; }
+  .logout-btn { background: none; border: 1px solid #d1d5db; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  #dashboard-frame { flex: 1; width: 100%; border: none; }
+</style>
+</head>
+<body>
+
+  <!-- PANTALLA DE LOGIN -->
+  <div id="login-screen">
+    <h1>Acceso al Dashboard</h1>
+    <p>Ingresa tus credenciales para continuar</p>
+    <input type="text" id="input-usuario" placeholder="Usuario">
+    <input type="password" id="input-password" placeholder="Contraseña">
+    <button onclick="verificarLogin()">Entrar</button>
+    <div id="error-msg">Usuario o contraseña incorrectos</div>
+  </div>
+
+  <!-- DASHBOARD (notebook exportado, cargado solo tras el login) -->
+  <div id="dashboard-screen">
+    <div class="header">
+      <h1>📊 Dashboard Demo</h1>
+      <button class="logout-btn" onclick="cerrarSesion()">Cerrar sesión</button>
+    </div>
+    <iframe id="dashboard-frame" src=""></iframe>
+  </div>
+
+<script>
+  function verificarLogin() {
+    const usuario = document.getElementById('input-usuario').value;
+    const password = document.getElementById('input-password').value;
+    const errorMsg = document.getElementById('error-msg');
+
+    if (usuario === USUARIO && password === PASSWORD) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard-screen').classList.add('visible');
+      document.getElementById('dashboard-frame').src = 'dashboard.html';
+      sessionStorage.setItem('logueado', 'true');
+    } else {
+      errorMsg.style.display = 'block';
+    }
+  }
+
+  function cerrarSesion() {
+    sessionStorage.removeItem('logueado');
+    location.reload();
+  }
+
+  // Mantener sesión mientras la pestaña esté abierta
+  window.onload = function() {
+    if (sessionStorage.getItem('logueado') === 'true') {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard-screen').classList.add('visible');
+      document.getElementById('dashboard-frame').src = 'dashboard.html';
+    }
+  };
+
+  // Permitir dar Enter para entrar
+  document.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') verificarLogin();
+  });
+</script>
+
+</body>
+</html>
