@@ -1,425 +1,680 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Data Quality</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
-  body { background: #f3f4f6; padding: 32px; }
-  .wrap { max-width: 640px; margin: 0 auto; }
-  h2 { color: #111; margin-bottom: 8px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
-  .description { color: #6b7280; font-size: 14px; margin-bottom: 24px; line-height: 1.5; text-align: center; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Quality Dashboard</title>
 
-  .hero-card {
-    background: #276EF1;
-    color: #FFFFFF;
-    border-radius: 16px;
-    padding: 20px 32px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 4px;
-    margin: 0 auto 24px auto;
-    max-width: 280px;
-  }
-  .hero-card .hero-number { font-size: 40px; font-weight: 700; line-height: 1; }
-  .hero-card .hero-label { font-size: 13px; font-weight: 600; opacity: 0.95; }
-  .hero-card .hero-sub { font-size: 11px; opacity: 0.8; }
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 
-  .section-card { background: white; border-radius: 12px; padding: 28px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
-  .section-card label { font-size: 13px; color: #6b7280; display: block; margin-bottom: 8px; }
-  select {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    font-size: 14px;
-    margin-bottom: 20px;
-    background: white;
-  }
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
-  .col-name { font-size: 18px; font-weight: 700; color: #111; margin-bottom: 10px; }
-  .metric-row { font-size: 14px; color: #374151; margin-bottom: 6px; }
-  .metric-label { color: #6b7280; }
-  #col-pct { font-weight: 700; }
-  .badge { padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    body {
+      background: #f3f4f6;
+      color: #111827;
+      padding: 32px;
+    }
 
-  .wrap { max-width: 820px; }
-  .table-scroll { overflow-x: auto; border-radius: 10px; border: 1px solid #f0f0f0; }
-  .coverage-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .coverage-table th, .coverage-table td { padding: 12px 14px; white-space: nowrap; }
-  .coverage-table thead th {
-    text-align: center;
-    color: #6b7280;
-    font-weight: 700;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    background: #f9fafb;
-    border-bottom: 2px solid #eef0f3;
-  }
-  .coverage-table thead th:first-child { text-align: left; }
-  .coverage-table tbody tr { border-bottom: 1px solid #f2f3f5; }
-  .coverage-table tbody tr:last-child { border-bottom: none; }
-  .coverage-table tbody tr:nth-child(even) { background: #fafbfc; }
-  .coverage-table tbody tr:hover { background: #f2f6fe; }
-  .city-cell { font-weight: 600; color: #111; text-align: left; }
-  .num-cell { text-align: center; color: #374151; }
-  .muted-cell { text-align: center; color: #9ca3af; font-size: 12px; }
-  .cov-badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-weight: 700; }
-</style>
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    .section-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+      padding: 30px;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 25px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 18px;
+      margin: 30px 0 14px;
+    }
+
+    .description {
+      max-width: 900px;
+      margin: 0 auto 24px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .status-message {
+      max-width: 900px;
+      margin: 0 auto 24px;
+      text-align: center;
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-size: 14px;
+    }
+
+    .status-message.error {
+      background: #fee4e2;
+      color: #b42318;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th {
+      background: #f9fafb;
+      color: #6b7280;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.45px;
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #f0f1f3;
+      font-size: 13px;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .metric-name {
+      font-weight: 700;
+    }
+
+    .correct-badge {
+      display: inline-block;
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .correct-yes {
+      background: #dcfae6;
+      color: #067647;
+    }
+
+    .correct-no {
+      background: #fee4e2;
+      color: #b42318;
+    }
+
+    .chart-panel {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 8px;
+      min-width: 0;
+      background: #fff;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 850px) {
+      body {
+        padding: 16px;
+      }
+
+      .section-card {
+        padding: 20px;
+      }
+
+      .chart-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="section-card">
-      <h2>DATA NULLS</h2>
-      <p class="description">This check scans every column in the dataset for missing values, so you can see at a glance which fields are complete and which ones need attention. Pick a column below to see its details.</p>
-
-      <div class="hero-card">
-        <div class="hero-number">100%</div>
-        <div class="hero-label">Data Completeness</div>
-        <div class="hero-sub">168 records · 8 cities · 21 months · no missing values</div>
-      </div>
-
-      <label for="column-select">Choose a column</label>
-      <select id="column-select" onchange="renderColumn(this.value)"></select>
-
-      <div class="col-name" id="col-name"></div>
-      <div class="metric-row"><span class="metric-label">Completion rate:</span> <span id="col-pct"></span> <span class="badge" id="col-badge"></span></div>
-      <div class="metric-row"><span class="metric-label">Total nulls:</span> <span id="col-nulls"></span></div>
-      <div class="metric-row"><span class="metric-label">Total data:</span> <span id="col-total"></span></div>
-    </div>
-  </div>
-
-    <div class="section-card" style="margin-top:24px;">
-      <h2>MONTH COVERAGE</h2>
-      <p class="description">Checks that every city has a row for each month between 2022-01 and 2023-09 (the full date range in the dataset), and flags any missing or duplicated months.</p>
-      <div class="table-scroll">
-      <table class="coverage-table">
-        <thead>
-          <tr>
-            <th>City</th>
-            <th>Expected Months</th>
-            <th>Rows Found</th>
-            <th>Unique Months</th>
-            <th>Coverage %</th>
-            <th>Missing Months</th>
-            <th>Duplicate Months</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="city-cell">Azteca</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">100%</span></td>
-          <td class="muted-cell">None</td>
-          <td class="muted-cell">None</td>
-        </tr>
-        <tr>
-          <td class="city-cell">Lusail</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">100%</span></td>
-          <td class="muted-cell">None</td>
-          <td class="muted-cell">None</td>
-        </tr>
-        <tr>
-          <td class="city-cell">Maracanã</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">100%</span></td>
-          <td class="muted-cell">None</td>
-          <td class="muted-cell">None</td>
-        </tr>
-        <tr>
-          <td class="city-cell">Old Trafford</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">100%</span></td>
-          <td class="muted-cell">None</td>
-          <td class="muted-cell">None</td>
-        </tr>
-        <tr>
-          <td class="city-cell">Rose Bowl</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">100%</span></td>
-          <td class="muted-cell">None</td>
-          <td class="muted-cell">None</td>
-        </tr>
-        <tr>
-          <td class="city-cell">San Siro</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">100%</span></td>
-          <td class="muted-cell">None</td>
-          <td class="muted-cell">None</td>
-        </tr>
-        <tr>
-          <td class="city-cell">Santiago Bernabeu</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">100%</span></td>
-          <td class="muted-cell">None</td>
-          <td class="muted-cell">None</td>
-        </tr>
-        <tr>
-          <td class="city-cell">Vila Belmiro</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell">21</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">100%</span></td>
-          <td class="muted-cell">None</td>
-          <td class="muted-cell">None</td>
-        </tr>
-        </tbody>
-      </table>
-      </div>
+  <div class="container">
+    <div id="status" class="status-message">
+      Loading dataset.csv and calculating data quality checks…
     </div>
 
-<div class="section-card" style="margin-top:24px;">
-  <h2>DATA TYPE CHECK</h2>
-  <p class="description">
-    Shows how pandas read each CSV column and the analysis-ready dtype after cleaning.
-  </p>
+    <section id="type-section" class="section-card hidden">
+      <h1>DATA TYPE CHECK</h1>
 
-  <div class="hero-card">
-    <div class="hero-number">20 / 22</div>
-    <div class="hero-label">Columns Needed Conversion</div>
-    <div class="hero-sub">Based on pandas dtypes, not Excel display formats</div>
+      <p class="description">
+        CURRENT DATA shows the detected type of each column.
+        EXPECTED DATA contains the expected type defined for each metric.
+        CORRECT is Yes only when both values match exactly.
+      </p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Metrics</th>
+              <th>Current Data</th>
+              <th>Expected Data</th>
+              <th>Correct</th>
+            </tr>
+          </thead>
+          <tbody id="type-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="ratio-section" class="section-card hidden">
+      <h1>FUNNEL RATIO VALIDATION</h1>
+
+      <p class="description">
+        Recalculates C/R, C/RS, RS/SS and C/SS from the source funnel volumes.
+        Reported and recalculated values pass when their absolute difference is
+        no greater than 0.005.
+      </p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Formula</th>
+              <th>Tested Rows</th>
+              <th>Pass</th>
+              <th>Fail</th>
+              <th>Not Testable</th>
+              <th>Pass Rate</th>
+              <th>Max Difference</th>
+            </tr>
+          </thead>
+          <tbody id="ratio-table-body"></tbody>
+        </table>
+      </div>
+
+      <h2>Pass Rate by Metric</h2>
+      <div id="pass-rate-chart" class="chart-panel"></div>
+
+      <h2>Reported vs. Recalculated</h2>
+      <div class="chart-grid">
+        <div id="chart-cr" class="chart-panel"></div>
+        <div id="chart-crs" class="chart-panel"></div>
+        <div id="chart-rsss" class="chart-panel"></div>
+        <div id="chart-css" class="chart-panel"></div>
+      </div>
+    </section>
   </div>
 
-  <div class="table-scroll">
-  <table class="coverage-table">
-    <thead>
-      <tr>
-        <th>Column</th>
-        <th>Raw dtype</th>
-        <th>Typed dtype</th>
-        <th>Converted?</th>
-        <th>Raw example</th>
-        <th>Typed value example</th>
-        <th>Failures</th>
-      </tr>
-    </thead>
-    <tbody><tr>
-      <td class="city-cell">MONTH</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">datetime64[us]</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">2022-01</td>
-      <td class="muted-cell">2022-01-01 00:00:00</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">CITY</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">string</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-      <td class="muted-cell">Vila Belmiro</td>
-      <td class="muted-cell">Vila Belmiro</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">TRIPS</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Int64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">3,005,706</td>
-      <td class="muted-cell">3005706</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">GROSS BOOKINGS (GB)</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Float64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">56,529,569</td>
-      <td class="muted-cell">56529569.0</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">SHOPPING SESSIONS</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Int64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">5,283,006</td>
-      <td class="muted-cell">5283006</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">RIDERS WITH SESSIONS</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Int64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">711,432</td>
-      <td class="muted-cell">711432</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">REQUESTING SESSIONS</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Int64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">3,257,826</td>
-      <td class="muted-cell">3257826</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">REQUESTS</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Int64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">3,844,423</td>
-      <td class="muted-cell">3844423</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">ACTIVE DRIVERS</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Int64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">18,795</td>
-      <td class="muted-cell">18795</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">SUPPLY HOURS</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Float64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">1,564,816</td>
-      <td class="muted-cell">1564816.0</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">C/R</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Float64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">78.2%</td>
-      <td class="muted-cell">0.782</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">C/RS</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Float64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">92.3%</td>
-      <td class="muted-cell">0.9229999999999999</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">RS/SS</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Float64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">61.7%</td>
-      <td class="muted-cell">0.617</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">C/SS</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Float64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">56.9%</td>
-      <td class="muted-cell">0.569</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">ACCEPTANCE RATE</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Float64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">23.0%</td>
-      <td class="muted-cell">0.23</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">DRIVER CANCELATION</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Float64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">20.0%</td>
-      <td class="muted-cell">0.2</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">SUPPLY UTILIZATION</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Float64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">63.0%</td>
-      <td class="muted-cell">0.63</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">NPI</td>
-      <td class="num-cell">float64</td>
-      <td class="num-cell">Float64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-      <td class="muted-cell">1.03</td>
-      <td class="muted-cell">1.03</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">DRIVER PAYMENTS (AS % OF GB)</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Float64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">73.5%</td>
-      <td class="muted-cell">0.735</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">RIDER INCENTIVES AND PROMOTIONS (AS % OF GB)</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Float64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">5.7%</td>
-      <td class="muted-cell">0.057</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">DRIVER INCENTIVES AND PROMOTIONS (AS % OF GB)</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Float64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">5.1%</td>
-      <td class="muted-cell">0.051</td>
-      <td class="num-cell">0</td>
-    </tr><tr>
-      <td class="city-cell">TAKE RATE (AS % OF GB)</td>
-      <td class="num-cell">str</td>
-      <td class="num-cell">Float64</td>
-      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-      <td class="muted-cell">14.2%</td>
-      <td class="muted-cell">0.142</td>
-      <td class="num-cell">0</td>
-    </tr></tbody>
-  </table>
-  </div>
-</div>
+  <script>
+    const DATASET_PATH = "dataset.csv";
+    const RATIO_TOLERANCE = 0.005;
 
-<script>
-  const columnStats = [{"name": "MONTH", "description": "Reporting month for the record (YYYY-MM).", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "CITY", "description": "Market / city where the metrics were recorded.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "TRIPS", "description": "Number of completed trips.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "GROSS BOOKINGS (GB)", "description": "Total gross bookings value generated.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "SHOPPING SESSIONS", "description": "App sessions where a rider browsed, not necessarily requesting a ride.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "RIDERS WITH SESSIONS", "description": "Unique riders who opened a session.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "REQUESTING SESSIONS", "description": "Sessions where the rider went on to request a ride.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "REQUESTS", "description": "Total ride requests made.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "ACTIVE DRIVERS", "description": "Unique drivers who were online during the period.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "SUPPLY HOURS", "description": "Total hours drivers spent online and available.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "C/R", "description": "Completion rate: completed trips over requests.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "C/RS", "description": "Completion rate: completed trips over requesting sessions.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "RS/SS", "description": "Conversion rate: requesting sessions over shopping sessions.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "C/SS", "description": "Completion rate: completed trips over shopping sessions.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "ACCEPTANCE RATE", "description": "Share of requests accepted by drivers.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "DRIVER CANCELATION", "description": "Share of trips cancelled by drivers.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "SUPPLY UTILIZATION", "description": "Share of available driver supply hours actually used.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "NPI", "description": "Placeholder \u2014 confirm real definition.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "DRIVER PAYMENTS (AS % OF GB)", "description": "Driver earnings as a percentage of gross bookings.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "RIDER INCENTIVES AND PROMOTIONS (AS % OF GB)", "description": "Rider-side incentives/promos as a percentage of gross bookings.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "DRIVER INCENTIVES AND PROMOTIONS (AS % OF GB)", "description": "Driver-side incentives/promos as a percentage of gross bookings.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "TAKE RATE (AS % OF GB)", "description": "Platform's take rate as a percentage of gross bookings.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}];
-  const statusColors = { ok: "#3AA76D", warn: "#FFC043", bad: "#D44333" };
-  const statusLabels = { ok: "OK", warn: "Review", bad: "Critical" };
+    const EXPECTED_TYPES = {
+      "MONTH": "date",
+      "CITY": "string",
 
-  const select = document.getElementById('column-select');
-  columnStats.forEach(function(col) {
-    const opt = document.createElement('option');
-    opt.value = col.name;
-    opt.textContent = col.name;
-    select.appendChild(opt);
-  });
+      "TRIPS": "int",
+      "GROSS BOOKINGS (GB)": "int",
+      "SHOPPING SESSIONS": "int",
+      "RIDERS WITH SESSIONS": "int",
+      "REQUESTING SESSIONS": "int",
+      "REQUESTS": "int",
+      "ACTIVE DRIVERS": "int",
+      "SUPPLY HOURS": "int",
 
-  function renderColumn(name) {
-    const col = columnStats.find(function(c) { return c.name === name; });
-    if (!col) return;
-    document.getElementById('col-name').textContent = col.name;
-    document.getElementById('col-pct').textContent = col.completeness + "%";
-    document.getElementById('col-pct').style.color = statusColors[col.status];
-    document.getElementById('col-nulls').textContent = col.nulls;
-    document.getElementById('col-total').textContent = col.total;
-    const badge = document.getElementById('col-badge');
-    badge.textContent = statusLabels[col.status];
-    badge.style.background = statusColors[col.status] + "22";
-    badge.style.color = statusColors[col.status];
-  }
+      "C/R": "float",
+      "C/RS": "float",
+      "RS/SS": "float",
+      "C/SS": "float",
+      "ACCEPTANCE RATE": "float",
+      "DRIVER CANCELATION": "float",
+      "SUPPLY UTILIZATION": "float",
 
-  renderColumn(columnStats[0].name);
-</script>
+      "NPI": "float64",
+
+      "DRIVER PAYMENTS (AS % OF GB)": "float",
+      "RIDER INCENTIVES AND PROMOTIONS (AS % OF GB)": "float",
+      "DRIVER INCENTIVES AND PROMOTIONS (AS % OF GB)": "float",
+      "TAKE RATE (AS % OF GB)": "float"
+    };
+
+    const RATIO_DEFINITIONS = {
+      "C/R": {
+        numerator: "TRIPS",
+        denominator: "REQUESTS",
+        formula: "TRIPS / REQUESTS",
+        chartId: "chart-cr"
+      },
+      "C/RS": {
+        numerator: "TRIPS",
+        denominator: "REQUESTING SESSIONS",
+        formula: "TRIPS / REQUESTING SESSIONS",
+        chartId: "chart-crs"
+      },
+      "RS/SS": {
+        numerator: "REQUESTING SESSIONS",
+        denominator: "SHOPPING SESSIONS",
+        formula: "REQUESTING SESSIONS / SHOPPING SESSIONS",
+        chartId: "chart-rsss"
+      },
+      "C/SS": {
+        numerator: "TRIPS",
+        denominator: "SHOPPING SESSIONS",
+        formula: "TRIPS / SHOPPING SESSIONS",
+        chartId: "chart-css"
+      }
+    };
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function parseNumber(value) {
+      if (value === null || value === undefined || value === "") {
+        return NaN;
+      }
+
+      if (typeof value === "number") {
+        return Number.isFinite(value) ? value : NaN;
+      }
+
+      const cleaned = String(value)
+        .trim()
+        .replaceAll(",", "")
+        .replaceAll("$", "")
+        .replaceAll("%", "");
+
+      const parsed = Number(cleaned);
+      return Number.isFinite(parsed) ? parsed : NaN;
+    }
+
+    function parseRatio(value) {
+      if (value === null || value === undefined || value === "") {
+        return NaN;
+      }
+
+      const original = String(value).trim();
+      let parsed = parseNumber(original);
+
+      if (!Number.isFinite(parsed)) {
+        return NaN;
+      }
+
+      if (original.includes("%") || Math.abs(parsed) > 1) {
+        parsed = parsed / 100;
+      }
+
+      return parsed;
+    }
+
+    function isDateValue(value) {
+      if (value === null || value === undefined || String(value).trim() === "") {
+        return false;
+      }
+
+      return !Number.isNaN(Date.parse(String(value).trim()));
+    }
+
+    function detectColumnType(rows, column) {
+      const values = rows
+        .map(row => row[column])
+        .filter(value => value !== null && value !== undefined && String(value).trim() !== "");
+
+      if (values.length === 0) {
+        return "object";
+      }
+
+      if (values.every(value => isDateValue(value))) {
+        return "date";
+      }
+
+      const numericValues = values.map(parseNumber);
+      const allNumeric = numericValues.every(Number.isFinite);
+
+      if (allNumeric) {
+        const allIntegers = numericValues.every(Number.isInteger);
+        return allIntegers ? "int" : "float";
+      }
+
+      return "string";
+    }
+
+    function buildTypeTable(rows, columns) {
+      const tbody = document.getElementById("type-table-body");
+      tbody.innerHTML = "";
+
+      columns.forEach(column => {
+        const currentType = detectColumnType(rows, column);
+        const expectedType = EXPECTED_TYPES[column] || "";
+        const isCorrect = currentType === expectedType;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="metric-name">${escapeHtml(column)}</td>
+          <td>${escapeHtml(currentType)}</td>
+          <td>${escapeHtml(expectedType)}</td>
+          <td>
+            <span class="correct-badge ${isCorrect ? "correct-yes" : "correct-no"}">
+              ${isCorrect ? "Yes" : "No"}
+            </span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function validateRatios(rows) {
+      const results = {};
+      const summaries = [];
+
+      Object.entries(RATIO_DEFINITIONS).forEach(([metric, definition]) => {
+        const metricRows = rows.map(row => {
+          const numerator = parseNumber(row[definition.numerator]);
+          const denominator = parseNumber(row[definition.denominator]);
+          const reported = parseRatio(row[metric]);
+
+          let recalculated = NaN;
+          let difference = NaN;
+          let status = "Not Testable";
+
+          if (
+            Number.isFinite(numerator) &&
+            Number.isFinite(denominator) &&
+            Number.isFinite(reported)
+          ) {
+            if (denominator === 0) {
+              status = "Zero Denominator";
+            } else {
+              recalculated = numerator / denominator;
+              difference = Math.abs(reported - recalculated);
+              status = difference <= RATIO_TOLERANCE ? "Pass" : "Fail";
+            }
+          }
+
+          return {
+            month: row["MONTH"],
+            city: row["CITY"],
+            reported,
+            recalculated,
+            difference,
+            status
+          };
+        });
+
+        const passCount = metricRows.filter(row => row.status === "Pass").length;
+        const failCount = metricRows.filter(row => row.status === "Fail").length;
+        const notTestableCount = metricRows.filter(
+          row => row.status === "Not Testable" || row.status === "Zero Denominator"
+        ).length;
+
+        const testedRows = passCount + failCount;
+        const passRate = testedRows > 0 ? passCount / testedRows : NaN;
+
+        const validDifferences = metricRows
+          .map(row => row.difference)
+          .filter(Number.isFinite);
+
+        const maxDifference = validDifferences.length
+          ? Math.max(...validDifferences)
+          : NaN;
+
+        results[metric] = metricRows;
+
+        summaries.push({
+          metric,
+          formula: definition.formula,
+          testedRows,
+          passCount,
+          failCount,
+          notTestableCount,
+          passRate,
+          maxDifference
+        });
+      });
+
+      return { results, summaries };
+    }
+
+    function buildRatioTable(summaries) {
+      const tbody = document.getElementById("ratio-table-body");
+      tbody.innerHTML = "";
+
+      summaries.forEach(summary => {
+        const passRateLabel = Number.isFinite(summary.passRate)
+          ? `${(summary.passRate * 100).toFixed(1)}%`
+          : "N/A";
+
+        const maxDifferenceLabel = Number.isFinite(summary.maxDifference)
+          ? summary.maxDifference.toFixed(4)
+          : "N/A";
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="metric-name">${escapeHtml(summary.metric)}</td>
+          <td>${escapeHtml(summary.formula)}</td>
+          <td>${summary.testedRows}</td>
+          <td>${summary.passCount}</td>
+          <td>${summary.failCount}</td>
+          <td>${summary.notTestableCount}</td>
+          <td>${passRateLabel}</td>
+          <td>${maxDifferenceLabel}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function drawPassRateChart(summaries) {
+      Plotly.newPlot(
+        "pass-rate-chart",
+        [{
+          type: "bar",
+          x: summaries.map(item => item.metric),
+          y: summaries.map(item =>
+            Number.isFinite(item.passRate) ? item.passRate * 100 : null
+          ),
+          text: summaries.map(item =>
+            Number.isFinite(item.passRate)
+              ? `${(item.passRate * 100).toFixed(1)}%`
+              : "N/A"
+          ),
+          textposition: "outside",
+          customdata: summaries.map(item => [
+            item.passCount,
+            item.failCount,
+            item.testedRows
+          ]),
+          hovertemplate:
+            "<b>%{x}</b><br>" +
+            "Pass rate: %{y:.2f}%<br>" +
+            "Passed: %{customdata[0]}<br>" +
+            "Failed: %{customdata[1]}<br>" +
+            "Tested: %{customdata[2]}" +
+            "<extra></extra>"
+        }],
+        {
+          title: "Funnel Ratio Validation — Pass Rate",
+          xaxis: { title: "Metric" },
+          yaxis: { title: "Pass Rate (%)", range: [0, 105] },
+          height: 430,
+          margin: { t: 70, r: 30, b: 60, l: 70 },
+          paper_bgcolor: "#ffffff",
+          plot_bgcolor: "#ffffff"
+        },
+        {
+          responsive: true,
+          displaylogo: false
+        }
+      );
+    }
+
+    function drawComparisonChart(metric, metricRows) {
+      const definition = RATIO_DEFINITIONS[metric];
+      const testedRows = metricRows.filter(
+        row =>
+          (row.status === "Pass" || row.status === "Fail") &&
+          Number.isFinite(row.reported) &&
+          Number.isFinite(row.recalculated)
+      );
+
+      const allValues = testedRows.flatMap(row => [
+        row.reported,
+        row.recalculated
+      ]);
+
+      const traces = [{
+        type: "scatter",
+        mode: "markers",
+        x: testedRows.map(row => row.recalculated),
+        y: testedRows.map(row => row.reported),
+        customdata: testedRows.map(row => [
+          row.month,
+          row.city,
+          row.status
+        ]),
+        hovertemplate:
+          "Month: %{customdata[0]}<br>" +
+          "City: %{customdata[1]}<br>" +
+          "Recalculated: %{x:.4f}<br>" +
+          "Reported: %{y:.4f}<br>" +
+          "Status: %{customdata[2]}" +
+          "<extra></extra>"
+      }];
+
+      if (allValues.length > 0) {
+        const minimum = Math.min(...allValues);
+        const maximum = Math.max(...allValues);
+
+        traces.push({
+          type: "scatter",
+          mode: "lines",
+          x: [minimum, maximum],
+          y: [minimum, maximum],
+          hoverinfo: "skip",
+          showlegend: false
+        });
+      }
+
+      Plotly.newPlot(
+        definition.chartId,
+        traces,
+        {
+          title: `${metric}: Reported vs. Recalculated`,
+          xaxis: { title: "Recalculated Value" },
+          yaxis: { title: "Reported Value" },
+          height: 430,
+          showlegend: false,
+          margin: { t: 70, r: 30, b: 60, l: 70 },
+          paper_bgcolor: "#ffffff",
+          plot_bgcolor: "#ffffff"
+        },
+        {
+          responsive: true,
+          displaylogo: false
+        }
+      );
+    }
+
+    function showError(message) {
+      const status = document.getElementById("status");
+      status.classList.add("error");
+      status.innerHTML = `
+        <strong>Unable to load the dashboard.</strong><br>
+        ${escapeHtml(message)}
+      `;
+    }
+
+    Papa.parse(DATASET_PATH, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      encoding: "ISO-8859-1",
+
+      complete: function(results) {
+        if (results.errors && results.errors.length > 0 && results.data.length === 0) {
+          showError(results.errors[0].message);
+          return;
+        }
+
+        const rows = results.data;
+        const columns = results.meta.fields || [];
+
+        if (!rows.length || !columns.length) {
+          showError("dataset.csv is empty or does not contain headers.");
+          return;
+        }
+
+        const missingRatioColumns = [
+          "MONTH",
+          "CITY",
+          "TRIPS",
+          "REQUESTS",
+          "REQUESTING SESSIONS",
+          "SHOPPING SESSIONS",
+          "C/R",
+          "C/RS",
+          "RS/SS",
+          "C/SS"
+        ].filter(column => !columns.includes(column));
+
+        if (missingRatioColumns.length > 0) {
+          showError(
+            `The following required columns are missing: ${missingRatioColumns.join(", ")}`
+          );
+          return;
+        }
+
+        buildTypeTable(rows, columns);
+
+        const { results: ratioResults, summaries } = validateRatios(rows);
+        buildRatioTable(summaries);
+        drawPassRateChart(summaries);
+
+        Object.keys(RATIO_DEFINITIONS).forEach(metric => {
+          drawComparisonChart(metric, ratioResults[metric]);
+        });
+
+        document.getElementById("status").classList.add("hidden");
+        document.getElementById("type-section").classList.remove("hidden");
+        document.getElementById("ratio-section").classList.remove("hidden");
+      },
+
+      error: function(error) {
+        showError(
+          `${error.message}. Make sure data_quality.html and dataset.csv are in the same GitHub folder.`
+        );
+      }
+    });
+  </script>
 </body>
 </html>
