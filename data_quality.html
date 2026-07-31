@@ -1,54 +1,59 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Data Quality</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
-  body { background: #f3f4f6; padding: 24px; }
-  h2 { color: #111; margin-bottom: 20px; }
+  body {
+    background: #f3f4f6;
+    padding: 24px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-  .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
-  .card .label { font-size: 12px; color: #6b7280; margin-bottom: 6px; }
-  .card .value { font-size: 26px; font-weight: 600; }
-  .ok { color: #16a34a; }
-  .warn { color: #f59e0b; }
-  .bad { color: #dc2626; }
+  /* ============================================
+     UBER PALETTE
+     ============================================ */
+  :root {
+    --uber-black: #000000;
+    --uber-white: #FFFFFF;
+    --uber-blue: #276EF1;
+    --uber-green: #3AA76D;
+    --uber-yellow: #FFC043;
+    --uber-red: #D44333;
+  }
 
-  .tabla-box { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
-  table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  th, td { text-align: left; padding: 10px; border-bottom: 1px solid #f0f0f0; }
-  th { color: #6b7280; font-weight: 500; }
-  .badge { padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-  .badge-ok { background: #dcfce7; color: #16a34a; }
-  .badge-warn { background: #fef3c7; color: #b45309; }
-  .badge-bad { background: #fee2e2; color: #dc2626; }
+  /* --- Hero card --- */
+  .hero-card {
+    background: var(--uber-blue);
+    color: var(--uber-white);
+    border-radius: 16px;
+    padding: 28px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+    box-shadow: 0 4px 20px rgba(39,110,241,0.25);
+    max-width: 320px;
+  }
+  .hero-card .check { font-size: 32px; line-height: 1; margin-bottom: 4px; }
+  .hero-card .hero-number { font-size: 44px; font-weight: 700; line-height: 1; }
+  .hero-card .hero-label { font-size: 14px; font-weight: 600; opacity: 0.95; }
+  .hero-card .hero-sub { font-size: 11px; opacity: 0.8; }
 </style>
 </head>
 <body>
-  <h2>🔍 Data Quality — Datos ficticios</h2>
 
-  <div class="cards">
-    <div class="card"><div class="label">Completitud general</div><div class="value ok">96%</div></div>
-    <div class="card"><div class="label">Registros duplicados</div><div class="value warn">14</div></div>
-    <div class="card"><div class="label">Valores nulos</div><div class="value bad">32</div></div>
-    <div class="card"><div class="label">Última validación</div><div class="value" style="font-size:18px; color:#374151;">Hoy</div></div>
+  <div class="hero-card">
+    <div class="check">✅</div>
+    <div class="hero-number">100%</div>
+    <div class="hero-label">Data Completeness</div>
+    <div class="hero-sub">168 records · 8 cities · 21 months · no missing values</div>
   </div>
 
-  <div class="tabla-box">
-    <table>
-      <thead>
-        <tr><th>Columna</th><th>% Completitud</th><th>Duplicados</th><th>Nulos</th><th>Estatus</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>Cliente_ID</td><td>100%</td><td>0</td><td>0</td><td><span class="badge badge-ok">OK</span></td></tr>
-        <tr><td>Fecha_Pedido</td><td>98%</td><td>3</td><td>4</td><td><span class="badge badge-ok">OK</span></td></tr>
-        <tr><td>Producto</td><td>94%</td><td>6</td><td>11</td><td><span class="badge badge-warn">Revisar</span></td></tr>
-        <tr><td>Monto</td><td>89%</td><td>5</td><td>17</td><td><span class="badge badge-bad">Crítico</span></td></tr>
-        <tr><td>Correo_Contacto</td><td>91%</td><td>0</td><td>0</td><td><span class="badge badge-warn">Revisar</span></td></tr>
-      </tbody>
-    </table>
-  </div>
 </body>
 </html>
