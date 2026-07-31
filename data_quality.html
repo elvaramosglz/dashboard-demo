@@ -186,6 +186,41 @@
       </div>
     </div>
 
+    <div class="section-card" style="margin-top:24px;">
+      <h2>DATA TYPE CHECK</h2>
+      <p class="description">Whether each column has the type it should when opened in a spreadsheet, and what changed to fix the ones that don't.</p>
+
+      <div class="hero-card">
+        <div class="hero-number">2 / 22</div>
+        <div class="hero-label">Columns Need Cleaning</div>
+        <div class="hero-sub">2 General · 1 Text · 8 Number · 11 Percentage</div>
+      </div>
+
+      <div class="table-scroll">
+      <table class="coverage-table">
+        <thead>
+          <tr>
+            <th>Column</th>
+            <th>Expected</th>
+            <th>Raw → Corrected</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="city-cell">MONTH</td>
+          <td class="num-cell">Date</td>
+          <td class="muted-cell">2022-01 → 2022-01-01</td>
+        </tr>
+        <tr>
+          <td class="city-cell">NPI</td>
+          <td class="num-cell">Number</td>
+          <td class="muted-cell">1.03 → 1.03</td>
+        </tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+
 <script>
   const columnStats = [{"name": "MONTH", "description": "Reporting month for the record (YYYY-MM).", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "CITY", "description": "Market / city where the metrics were recorded.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "TRIPS", "description": "Number of completed trips.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "GROSS BOOKINGS (GB)", "description": "Total gross bookings value generated.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "SHOPPING SESSIONS", "description": "App sessions where a rider browsed, not necessarily requesting a ride.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "RIDERS WITH SESSIONS", "description": "Unique riders who opened a session.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "REQUESTING SESSIONS", "description": "Sessions where the rider went on to request a ride.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "REQUESTS", "description": "Total ride requests made.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "ACTIVE DRIVERS", "description": "Unique drivers who were online during the period.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "SUPPLY HOURS", "description": "Total hours drivers spent online and available.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "C/R", "description": "Completion rate: completed trips over requests.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "C/RS", "description": "Completion rate: completed trips over requesting sessions.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "RS/SS", "description": "Conversion rate: requesting sessions over shopping sessions.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "C/SS", "description": "Completion rate: completed trips over shopping sessions.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "ACCEPTANCE RATE", "description": "Share of requests accepted by drivers.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "DRIVER CANCELATION", "description": "Share of trips cancelled by drivers.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "SUPPLY UTILIZATION", "description": "Share of available driver supply hours actually used.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "NPI", "description": "Placeholder \u2014 confirm real definition.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "DRIVER PAYMENTS (AS % OF GB)", "description": "Driver earnings as a percentage of gross bookings.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "RIDER INCENTIVES AND PROMOTIONS (AS % OF GB)", "description": "Rider-side incentives/promos as a percentage of gross bookings.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "DRIVER INCENTIVES AND PROMOTIONS (AS % OF GB)", "description": "Driver-side incentives/promos as a percentage of gross bookings.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "TAKE RATE (AS % OF GB)", "description": "Platform's take rate as a percentage of gross bookings.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}];
   const statusColors = { ok: "#3AA76D", warn: "#FFC043", bad: "#D44333" };
