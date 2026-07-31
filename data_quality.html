@@ -186,209 +186,211 @@
       </div>
     </div>
 
-    <div class="section-card" style="margin-top:24px;">
-      <h2>DATA TYPE CHECK</h2>
-      <p class="description">Whether each column has the type it should when opened in a spreadsheet, and what changed to fix the ones that don't.</p>
+<div class="section-card" style="margin-top:24px;">
+  <h2>DATA TYPE CHECK</h2>
+  <p class="description">
+    Shows how pandas read each CSV column and the analysis-ready dtype after cleaning.
+  </p>
 
-      <div class="hero-card">
-        <div class="hero-number">2 / 22</div>
-        <div class="hero-label">Columns Need Cleaning</div>
-        <div class="hero-sub">2 General · 1 Text · 8 Number · 11 Percentage</div>
-      </div>
+  <div class="hero-card">
+    <div class="hero-number">20 / 22</div>
+    <div class="hero-label">Columns Needed Conversion</div>
+    <div class="hero-sub">Based on pandas dtypes, not Excel display formats</div>
+  </div>
 
-      <div class="table-scroll">
-      <table class="coverage-table">
-        <thead>
-          <tr>
-            <th>Column</th>
-            <th>Expected Type</th>
-            <th>Actual Type</th>
-            <th>Issue?</th>
-            <th>Values</th>
-            <th>Raw → Corrected</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="city-cell">MONTH</td>
-          <td class="num-cell">Date</td>
-          <td class="num-cell">General</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-          <td class="muted-cell">21 distinct values (2022-01 to 2023-09)</td>
-          <td class="muted-cell">2022-01 → 2022-01</td>
-        </tr>
-        <tr>
-          <td class="city-cell">CITY</td>
-          <td class="num-cell">Text</td>
-          <td class="num-cell">Text</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">8 distinct values</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">TRIPS</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 1,533,078  max: 15,078,245</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">GROSS BOOKINGS (GB)</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 25,315,829  max: 341,153,811</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">SHOPPING SESSIONS</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 2,692,591  max: 28,135,176</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">RIDERS WITH SESSIONS</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 406,844  max: 3,264,081</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">REQUESTING SESSIONS</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 1,638,051  max: 16,723,285</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">REQUESTS</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 1,859,779  max: 18,791,835</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">ACTIVE DRIVERS</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 8,742  max: 90,278</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">SUPPLY HOURS</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 824,750  max: 9,312,092</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">C/R</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 59.7%  max: 90.7%</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">C/RS</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 81.0%  max: 96.8%</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">RS/SS</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 52.4%  max: 67.8%</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">C/SS</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 46.5%  max: 65.3%</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">ACCEPTANCE RATE</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 17.0%  max: 46.0%</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">DRIVER CANCELATION</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 13.0%  max: 32.0%</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">SUPPLY UTILIZATION</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 55.0%  max: 81.0%</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">NPI</td>
-          <td class="num-cell">Number</td>
-          <td class="num-cell">General</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
-          <td class="muted-cell">min: 0.92  max: 1.10</td>
-          <td class="muted-cell">1.03 → 1.03</td>
-        </tr>
-        <tr>
-          <td class="city-cell">DRIVER PAYMENTS (AS % OF GB)</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 69.0%  max: 79.9%</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">RIDER INCENTIVES AND PROMOTIONS (AS % OF GB)</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: -8.5%  max: 17.4%</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">DRIVER INCENTIVES AND PROMOTIONS (AS % OF GB)</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 0.0%  max: 9.1%</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        <tr>
-          <td class="city-cell">TAKE RATE (AS % OF GB)</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell">Percentage</td>
-          <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
-          <td class="muted-cell">min: 4.2%  max: 24.3%</td>
-          <td class="muted-cell">—</td>
-        </tr>
-        </tbody>
-      </table>
-      </div>
-    </div>
+  <div class="table-scroll">
+  <table class="coverage-table">
+    <thead>
+      <tr>
+        <th>Column</th>
+        <th>Raw dtype</th>
+        <th>Typed dtype</th>
+        <th>Converted?</th>
+        <th>Raw example</th>
+        <th>Typed value example</th>
+        <th>Failures</th>
+      </tr>
+    </thead>
+    <tbody><tr>
+      <td class="city-cell">MONTH</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">datetime64[us]</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">2022-01</td>
+      <td class="muted-cell">2022-01-01 00:00:00</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">CITY</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">string</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
+      <td class="muted-cell">Vila Belmiro</td>
+      <td class="muted-cell">Vila Belmiro</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">TRIPS</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Int64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">3,005,706</td>
+      <td class="muted-cell">3005706</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">GROSS BOOKINGS (GB)</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Float64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">56,529,569</td>
+      <td class="muted-cell">56529569.0</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">SHOPPING SESSIONS</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Int64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">5,283,006</td>
+      <td class="muted-cell">5283006</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">RIDERS WITH SESSIONS</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Int64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">711,432</td>
+      <td class="muted-cell">711432</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">REQUESTING SESSIONS</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Int64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">3,257,826</td>
+      <td class="muted-cell">3257826</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">REQUESTS</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Int64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">3,844,423</td>
+      <td class="muted-cell">3844423</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">ACTIVE DRIVERS</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Int64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">18,795</td>
+      <td class="muted-cell">18795</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">SUPPLY HOURS</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Float64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">1,564,816</td>
+      <td class="muted-cell">1564816.0</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">C/R</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Float64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">78.2%</td>
+      <td class="muted-cell">0.782</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">C/RS</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Float64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">92.3%</td>
+      <td class="muted-cell">0.9229999999999999</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">RS/SS</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Float64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">61.7%</td>
+      <td class="muted-cell">0.617</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">C/SS</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Float64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">56.9%</td>
+      <td class="muted-cell">0.569</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">ACCEPTANCE RATE</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Float64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">23.0%</td>
+      <td class="muted-cell">0.23</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">DRIVER CANCELATION</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Float64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">20.0%</td>
+      <td class="muted-cell">0.2</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">SUPPLY UTILIZATION</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Float64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">63.0%</td>
+      <td class="muted-cell">0.63</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">NPI</td>
+      <td class="num-cell">float64</td>
+      <td class="num-cell">Float64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#3AA76D; background:#3AA76D1A;">No</span></td>
+      <td class="muted-cell">1.03</td>
+      <td class="muted-cell">1.03</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">DRIVER PAYMENTS (AS % OF GB)</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Float64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">73.5%</td>
+      <td class="muted-cell">0.735</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">RIDER INCENTIVES AND PROMOTIONS (AS % OF GB)</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Float64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">5.7%</td>
+      <td class="muted-cell">0.057</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">DRIVER INCENTIVES AND PROMOTIONS (AS % OF GB)</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Float64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">5.1%</td>
+      <td class="muted-cell">0.051</td>
+      <td class="num-cell">0</td>
+    </tr><tr>
+      <td class="city-cell">TAKE RATE (AS % OF GB)</td>
+      <td class="num-cell">str</td>
+      <td class="num-cell">Float64</td>
+      <td class="num-cell"><span class="cov-badge" style="color:#D44333; background:#D443331A;">Yes</span></td>
+      <td class="muted-cell">14.2%</td>
+      <td class="muted-cell">0.142</td>
+      <td class="num-cell">0</td>
+    </tr></tbody>
+  </table>
+  </div>
+</div>
 
 <script>
   const columnStats = [{"name": "MONTH", "description": "Reporting month for the record (YYYY-MM).", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "CITY", "description": "Market / city where the metrics were recorded.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "TRIPS", "description": "Number of completed trips.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "GROSS BOOKINGS (GB)", "description": "Total gross bookings value generated.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "SHOPPING SESSIONS", "description": "App sessions where a rider browsed, not necessarily requesting a ride.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "RIDERS WITH SESSIONS", "description": "Unique riders who opened a session.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "REQUESTING SESSIONS", "description": "Sessions where the rider went on to request a ride.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "REQUESTS", "description": "Total ride requests made.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "ACTIVE DRIVERS", "description": "Unique drivers who were online during the period.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "SUPPLY HOURS", "description": "Total hours drivers spent online and available.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "C/R", "description": "Completion rate: completed trips over requests.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "C/RS", "description": "Completion rate: completed trips over requesting sessions.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "RS/SS", "description": "Conversion rate: requesting sessions over shopping sessions.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "C/SS", "description": "Completion rate: completed trips over shopping sessions.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "ACCEPTANCE RATE", "description": "Share of requests accepted by drivers.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "DRIVER CANCELATION", "description": "Share of trips cancelled by drivers.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "SUPPLY UTILIZATION", "description": "Share of available driver supply hours actually used.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "NPI", "description": "Placeholder \u2014 confirm real definition.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "DRIVER PAYMENTS (AS % OF GB)", "description": "Driver earnings as a percentage of gross bookings.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "RIDER INCENTIVES AND PROMOTIONS (AS % OF GB)", "description": "Rider-side incentives/promos as a percentage of gross bookings.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "DRIVER INCENTIVES AND PROMOTIONS (AS % OF GB)", "description": "Driver-side incentives/promos as a percentage of gross bookings.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}, {"name": "TAKE RATE (AS % OF GB)", "description": "Platform's take rate as a percentage of gross bookings.", "completeness": "100", "nulls": 0, "total": 168, "status": "ok"}];
