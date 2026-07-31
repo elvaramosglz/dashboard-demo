@@ -60,7 +60,7 @@
     opacity: 0;
     transform: translateY(18px) scale(0.97);
     animation: loginReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    animation-delay: 1.1s;
+    animation-delay: 1.6s;
   }
   @keyframes loginReveal {
     to { opacity: 1; transform: translateY(0) scale(1); }
@@ -202,9 +202,9 @@
       <div class="sidebar-spacer"></div>
 
       <div class="user-chip">
-        <div class="user-avatar">EL</div>
+        <div class="user-avatar" id="user-avatar"></div>
         <div class="user-info">
-          <div class="name">Elva</div>
+          <div class="name" id="user-name"></div>
           <div class="action" onclick="logOut()">Log out</div>
         </div>
       </div>
@@ -232,6 +232,12 @@
   // ============================================
   const USERNAME = "demo";
   const PASSWORD = "demo123";
+
+  // ============================================
+  // CONFIGURE HERE: display name shown in the sidebar
+  // Leave generic \u2014 this page may be opened by someone else
+  // ============================================
+  const DISPLAY_NAME = "User";
 
   function verifyLogin() {
     const username = document.getElementById('input-username').value;
@@ -271,6 +277,9 @@
   }
 
   window.onload = function() {
+    document.getElementById('user-name').textContent = DISPLAY_NAME;
+    document.getElementById('user-avatar').textContent = DISPLAY_NAME.slice(0, 2).toUpperCase();
+
     if (sessionStorage.getItem('loggedIn') === 'true') {
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app-shell').classList.add('visible');
