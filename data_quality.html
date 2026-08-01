@@ -59,26 +59,31 @@
   }
   .description { color: var(--muted); font-size: 13px; margin: 0 0 22px; line-height: 1.5; text-align: left; }
 
-  .nulls-grid { display: grid; grid-template-columns: 220px 1fr; gap: 28px; align-items: stretch; margin-top: 4px; }
-  @media (max-width: 640px) { .nulls-grid { grid-template-columns: 1fr; } }
+  .nulls-grid { display: flex; flex-direction: column; gap: 28px; margin-top: 4px; }
+  .nulls-col { display: flex; flex-direction: column; }
+  .nulls-kicker { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink); margin-bottom: 10px; }
+  .nulls-kicker::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--blue); flex-shrink: 0; }
 
   .hero-card {
-    background: var(--blue);
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
     color: #FFFFFF;
-    border: 1px solid var(--blue);
-    border-left: 4px solid var(--ink);
-    border-radius: var(--radius-sm);
-    padding: 18px 18px 16px;
+    border-radius: var(--radius);
+    padding: 28px 40px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 6px;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    max-width: 640px;
+    width: 100%;
+    margin: 0 auto;
+    box-shadow: 0 8px 24px rgba(33, 113, 236, 0.25);
   }
-  .hero-card .hero-number { font-family: var(--mono); font-size: 36px; font-weight: 700; line-height: 1; color: #FFFFFF; }
-  .hero-card .hero-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #FFFFFF; opacity: 0.9; }
-  .hero-bar { height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; margin: 2px 0 4px; }
-  .hero-bar-fill { height: 100%; background: var(--ink); }
-  .hero-card .hero-sub { font-size: 11px; color: #FFFFFF; opacity: 0.8; line-height: 1.4; }
+  .hero-card .hero-number { font-family: var(--mono); font-size: 48px; font-weight: 700; line-height: 1; color: #FFFFFF; }
+  .hero-card .hero-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #FFFFFF; opacity: 0.9; }
+  .hero-bar { height: 4px; width: 160px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; margin: 4px 0; }
+  .hero-bar-fill { height: 100%; background: #FFFFFF; }
+  .hero-card .hero-sub { font-size: 11.5px; color: #FFFFFF; opacity: 0.85; line-height: 1.6; max-width: 520px; }
 
   .section-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 32px; box-shadow: 0 1px 2px rgba(18,18,18,0.04); }
   .section-card label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; color: var(--muted); display: block; margin-bottom: 8px; }
@@ -130,24 +135,30 @@
   <div class="wrap">
     <div class="section-card" id="data-nulls">
       <h2>DATA NULLS</h2>
-      <p class="description">This check scans every column in the dataset for missing values, so you can see at a glance which fields are complete and which ones need attention. Pick a column below to see its details.</p>
+      <p class="description">This visualization shows the number and percentage of missing values in each column, making it easy to identify data gaps and prioritize fields that may require cleaning. Select a column below to explore its missing-value details.</p>
 
       <div class="nulls-grid">
-        <div class="hero-card">
-          <div class="hero-number">100%</div>
-          <div class="hero-label">Data Completeness</div>
-          <div class="hero-bar"><div class="hero-bar-fill" style="width:100%"></div></div>
-          <div class="hero-sub">168 records · 8 cities · 21 months · no missing values</div>
+        <div class="nulls-col">
+          <div class="nulls-kicker">Overall Results</div>
+          <div class="hero-card">
+            <div class="hero-number">100%</div>
+            <div class="hero-label">Data Completeness</div>
+            <div class="hero-bar"><div class="hero-bar-fill" style="width:100%"></div></div>
+            <div class="hero-sub">Total columns: 22 · 168 records · 8 cities · 21 months · no missing values</div>
+          </div>
         </div>
 
-        <div class="detail-panel">
-          <label for="column-select">Choose a column</label>
-          <select id="column-select" onchange="renderColumn(this.value)"></select>
+        <div class="nulls-col">
+          <div class="nulls-kicker">Metric Details</div>
+          <div class="detail-panel">
+            <label for="column-select">Choose a column</label>
+            <select id="column-select" onchange="renderColumn(this.value)"></select>
 
-          <div class="col-name" id="col-name"></div>
-          <div class="metric-row"><span class="metric-label">Completion rate:</span> <span id="col-pct"></span> <span class="badge" id="col-badge"></span></div>
-          <div class="metric-row"><span class="metric-label">Total nulls:</span> <span id="col-nulls"></span></div>
-          <div class="metric-row"><span class="metric-label">Total data:</span> <span id="col-total"></span></div>
+            <div class="col-name" id="col-name"></div>
+            <div class="metric-row"><span class="metric-label">Completion rate:</span> <span id="col-pct"></span> <span class="badge" id="col-badge"></span></div>
+            <div class="metric-row"><span class="metric-label">Total nulls:</span> <span id="col-nulls"></span></div>
+            <div class="metric-row"><span class="metric-label">Total data:</span> <span id="col-total"></span></div>
+          </div>
         </div>
       </div>
     </div>
@@ -1108,11 +1119,11 @@
     <h2>FUNNEL RATIO VALIDATION</h2>
 
     <p class="ratio-description">
-        For every dataset row, the dashboard recalculates C/R, C/RS,
-        RS/SS and C/SS, compares each result against the reported value,
-        calculates the absolute difference, and marks CORRECT as True
-        when the difference is less than or equal to 0.001.
-        Use the filters below or click a column header to sort the table.
+        This validation recalculates C/R, C/RS, RS/SS, and C/SS for every
+        row, then compares each result with the reported value. It shows
+        the absolute difference and marks the result as correct when the
+        difference is 0.001 or less. Use the filters below
+        or select a column header to sort the table.
     </p>
 
     <div class="ratio-disclaimer">
