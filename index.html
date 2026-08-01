@@ -33,7 +33,7 @@
     position: absolute; top:0; left:0; right:0; bottom:0;
     background-image: url('login-bg.jpg');
     background-size: cover;
-    background-position: center;
+    background-position: center 70%;
     animation: bgZoom 12s ease-out forwards;
   }
   #login-bg::after {
@@ -132,6 +132,19 @@
   .nav-item.active { background: var(--uber-blue); color: white; }
   .nav-item.active .dot { background: white; }
 
+  .nav-sublist { list-style: none; margin: 0 0 4px 0; }
+  .nav-subitem {
+    padding: 7px 12px 7px 30px;
+    font-size: 13px;
+    color: var(--uber-gray-600);
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 2px;
+    transition: background 0.15s;
+  }
+  .nav-subitem:hover { background: var(--uber-gray-100); color: #111; }
+  .nav-subitem.active { background: var(--uber-blue-tint); color: var(--uber-blue-dark); font-weight: 600; }
+
   .sidebar-spacer { flex: 1; }
   .user-chip { display: flex; align-items: center; gap: 10px; padding: 10px 8px; border-top: 1px solid var(--uber-gray-200); margin-top: 8px; }
   .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--uber-blue-tint); color: var(--uber-blue); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
@@ -197,6 +210,12 @@
         <li class="nav-item" id="nav-dataquality" onclick="openSection('data_quality.html', 'Data Quality', 'Reports')">
           <span class="dot"></span> Data Quality
         </li>
+        <ul class="nav-sublist" id="dataquality-sublist">
+          <li class="nav-subitem" onclick="openDataQualitySection('data-nulls', 'Data Nulls', this)">Data Nulls</li>
+          <li class="nav-subitem" onclick="openDataQualitySection('month-coverage', 'Month Coverage', this)">Month Coverage</li>
+          <li class="nav-subitem" onclick="openDataQualitySection('data-type-check', 'Data Type Check', this)">Data Type Check</li>
+          <li class="nav-subitem" onclick="openDataQualitySection('funnel-ratio-validation', 'Funnel Ratio Validation', this)">Funnel Ratio Validation</li>
+        </ul>
       </ul>
 
       <div class="sidebar-spacer"></div>
@@ -261,6 +280,7 @@
     document.getElementById('breadcrumb-section').textContent = group;
 
     document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+    document.querySelectorAll('.nav-subitem').forEach(function(el) { el.classList.remove('active'); });
     if (file === 'dashboard.html') {
       document.getElementById('nav-dashboard').classList.add('active');
     } else {
@@ -268,6 +288,23 @@
     }
 
     sessionStorage.setItem('section', file);
+    sessionStorage.removeItem('section-hash');
+  }
+
+  function openDataQualitySection(hash, label, el) {
+    document.getElementById('content-frame').src = 'data_quality.html#' + hash;
+    document.getElementById('content-title').textContent = 'Data Quality';
+    document.getElementById('breadcrumb-section').textContent = 'Reports';
+    document.getElementById('breadcrumb-current').textContent = label;
+
+    document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+    document.getElementById('nav-dataquality').classList.add('active');
+
+    document.querySelectorAll('.nav-subitem').forEach(function(el) { el.classList.remove('active'); });
+    if (el) { el.classList.add('active'); }
+
+    sessionStorage.setItem('section', 'data_quality.html');
+    sessionStorage.setItem('section-hash', hash);
   }
 
   function logOut() {
@@ -284,8 +321,15 @@
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app-shell').classList.add('visible');
       const section = sessionStorage.getItem('section') || 'dashboard.html';
+      const hash = sessionStorage.getItem('section-hash');
       if (section === 'dashboard.html') {
         openSection('dashboard.html', 'Dashboard', 'Reports');
+      } else if (hash) {
+        document.getElementById('content-frame').src = 'data_quality.html#' + hash;
+        document.getElementById('content-title').textContent = 'Data Quality';
+        document.getElementById('breadcrumb-section').textContent = 'Reports';
+        document.getElementById('breadcrumb-current').textContent = 'Data Quality';
+        document.getElementById('nav-dataquality').classList.add('active');
       } else {
         openSection('data_quality.html', 'Data Quality', 'Reports');
       }
