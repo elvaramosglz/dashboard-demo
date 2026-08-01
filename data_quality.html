@@ -216,6 +216,577 @@
   renderColumn(columnStats[0].name);
 </script>
 
+
+<!-- DATA_TYPE_CHECK_START -->
+
+<style>
+
+    .dtype-section {
+        max-width: 1400px;
+        margin: 28px auto;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow:
+            0 4px 18px
+            rgba(0, 0, 0, 0.07);
+        padding: 30px;
+        color: #111827;
+        font-family:
+            Arial,
+            Helvetica,
+            sans-serif;
+    }
+
+    .dtype-section h2 {
+        text-align: center;
+        margin: 0 0 10px;
+        font-size: 25px;
+    }
+
+    .dtype-description {
+        max-width: 900px;
+        margin: 0 auto 24px;
+        text-align: center;
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .dtype-table-wrapper {
+        overflow-x: auto;
+        border:
+            1px solid #e5e7eb;
+        border-radius: 12px;
+    }
+
+    .dtype-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 760px;
+    }
+
+    .dtype-table th {
+        background: #f9fafb;
+        color: #6b7280;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.45px;
+        padding: 14px 16px;
+        text-align: left;
+        border-bottom:
+            1px solid #e5e7eb;
+    }
+
+    .dtype-table td {
+        padding: 14px 16px;
+        border-bottom:
+            1px solid #f0f1f3;
+        font-size: 13px;
+    }
+
+    .dtype-metric {
+        font-weight: 700;
+    }
+
+    .dtype-badge {
+        display: inline-block;
+        padding: 5px 11px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .dtype-correct {
+        background: #dcfae6;
+        color: #067647;
+    }
+
+    .dtype-incorrect {
+        background: #fee4e2;
+        color: #b42318;
+    }
+
+</style>
+
+
+<section class="dtype-section">
+
+    <h2>
+        DATA TYPE CHECK
+    </h2>
+
+    <p class="dtype-description">
+        Compares how pandas currently reads each dataset column
+        against the expected data type defined for the analysis.
+    </p>
+
+
+    <div class="dtype-table-wrapper">
+
+        <table class="dtype-table">
+
+            <thead>
+                <tr>
+                    <th>Metrics</th>
+                    <th>Current Data</th>
+                    <th>Expected Data</th>
+                    <th>Correct</th>
+                </tr>
+            </thead>
+
+
+            <tbody>
+                
+    <tr>
+        <td class="dtype-metric">
+            MONTH
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            date
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            CITY
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-correct">
+                Yes
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            TRIPS
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            int
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            GROSS BOOKINGS (GB)
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            int
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            SHOPPING SESSIONS
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            int
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            RIDERS WITH SESSIONS
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            int
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            REQUESTING SESSIONS
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            int
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            REQUESTS
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            int
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            ACTIVE DRIVERS
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            int
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            SUPPLY HOURS
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            int
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            C/R
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            float
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            C/RS
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            float
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            RS/SS
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            float
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            C/SS
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            float
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            ACCEPTANCE RATE
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            float
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            DRIVER CANCELATION
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            float
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            SUPPLY UTILIZATION
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            float
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            NPI
+        </td>
+
+        <td>
+            float64
+        </td>
+
+        <td>
+            float64
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-correct">
+                Yes
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            DRIVER PAYMENTS (AS % OF GB)
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            float
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            RIDER INCENTIVES AND PROMOTIONS (AS % OF GB)
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            float
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            DRIVER INCENTIVES AND PROMOTIONS (AS % OF GB)
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            float
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+    <tr>
+        <td class="dtype-metric">
+            TAKE RATE (AS % OF GB)
+        </td>
+
+        <td>
+            str
+        </td>
+
+        <td>
+            float
+        </td>
+
+        <td>
+            <span class="dtype-badge dtype-incorrect">
+                No
+            </span>
+        </td>
+    </tr>
+    
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+<!-- DATA_TYPE_CHECK_END -->
+
 <!-- FUNNEL_RATIO_VALIDATION_START -->
 
 <style>
