@@ -204,14 +204,6 @@
 
       <div class="nav-label">Reports</div>
       <ul class="nav-list">
-        <li class="nav-item" id="nav-dashboard" onclick="openSection('dashboard.html', 'Dashboard', 'Reports')">
-          <span class="dot"></span> Dashboard
-        </li>
-        <ul class="nav-sublist" id="dashboard-sublist">
-          <li class="nav-subitem" onclick="openDashboardSection('metric-over-time', 'Metric Over Time', this)">Metric Over Time</li>
-          <li class="nav-subitem" onclick="openDashboardSection('revenue-by-product', 'Revenue By Product', this)">Revenue By Product</li>
-          <li class="nav-subitem" onclick="openDashboardSection('units-distribution', 'Units Distribution', this)">Units Distribution</li>
-        </ul>
         <li class="nav-item" id="nav-dataquality" onclick="openSection('data_quality.html', 'Data Quality', 'Reports')">
           <span class="dot"></span> Data Quality
         </li>
@@ -220,6 +212,14 @@
           <li class="nav-subitem" onclick="openDataQualitySection('month-coverage', 'Month Coverage', this)">Month Coverage</li>
           <li class="nav-subitem" onclick="openDataQualitySection('data-type-check', 'Data Type Check', this)">Data Type Check</li>
           <li class="nav-subitem" onclick="openDataQualitySection('funnel-ratio-validation', 'Funnel Ratio Validation', this)">Funnel Ratio Validation</li>
+        </ul>
+        <li class="nav-item" id="nav-dashboard" onclick="openSection('dashboard.html', 'Dashboard', 'Reports')">
+          <span class="dot"></span> Dashboard
+        </li>
+        <ul class="nav-sublist" id="dashboard-sublist">
+          <li class="nav-subitem" onclick="openDashboardSection('metric-over-time', 'Metric Over Time', this)">Metric Over Time</li>
+          <li class="nav-subitem" onclick="openDashboardSection('revenue-by-product', 'Revenue By Product', this)">Revenue By Product</li>
+          <li class="nav-subitem" onclick="openDashboardSection('units-distribution', 'Units Distribution', this)">Units Distribution</li>
         </ul>
       </ul>
 
