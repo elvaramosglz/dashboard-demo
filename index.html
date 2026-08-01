@@ -207,6 +207,11 @@
         <li class="nav-item" id="nav-dashboard" onclick="openSection('dashboard.html', 'Dashboard', 'Reports')">
           <span class="dot"></span> Dashboard
         </li>
+        <ul class="nav-sublist" id="dashboard-sublist">
+          <li class="nav-subitem" onclick="openDashboardSection('metric-over-time', 'Metric Over Time', this)">Metric Over Time</li>
+          <li class="nav-subitem" onclick="openDashboardSection('revenue-by-product', 'Revenue By Product', this)">Revenue By Product</li>
+          <li class="nav-subitem" onclick="openDashboardSection('units-distribution', 'Units Distribution', this)">Units Distribution</li>
+        </ul>
         <li class="nav-item" id="nav-dataquality" onclick="openSection('data_quality.html', 'Data Quality', 'Reports')">
           <span class="dot"></span> Data Quality
         </li>
@@ -307,6 +312,22 @@
     sessionStorage.setItem('section-hash', hash);
   }
 
+  function openDashboardSection(hash, label, el) {
+    document.getElementById('content-frame').src = 'dashboard.html#' + hash;
+    document.getElementById('content-title').textContent = 'Dashboard';
+    document.getElementById('breadcrumb-section').textContent = 'Reports';
+    document.getElementById('breadcrumb-current').textContent = label;
+
+    document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+    document.getElementById('nav-dashboard').classList.add('active');
+
+    document.querySelectorAll('.nav-subitem').forEach(function(el) { el.classList.remove('active'); });
+    if (el) { el.classList.add('active'); }
+
+    sessionStorage.setItem('section', 'dashboard.html');
+    sessionStorage.setItem('section-hash', hash);
+  }
+
   function logOut() {
     sessionStorage.removeItem('loggedIn');
     sessionStorage.removeItem('section');
@@ -322,14 +343,20 @@
       document.getElementById('app-shell').classList.add('visible');
       const section = sessionStorage.getItem('section') || 'dashboard.html';
       const hash = sessionStorage.getItem('section-hash');
-      if (section === 'dashboard.html') {
-        openSection('dashboard.html', 'Dashboard', 'Reports');
-      } else if (hash) {
+      if (hash && section === 'dashboard.html') {
+        document.getElementById('content-frame').src = 'dashboard.html#' + hash;
+        document.getElementById('content-title').textContent = 'Dashboard';
+        document.getElementById('breadcrumb-section').textContent = 'Reports';
+        document.getElementById('breadcrumb-current').textContent = 'Dashboard';
+        document.getElementById('nav-dashboard').classList.add('active');
+      } else if (hash && section === 'data_quality.html') {
         document.getElementById('content-frame').src = 'data_quality.html#' + hash;
         document.getElementById('content-title').textContent = 'Data Quality';
         document.getElementById('breadcrumb-section').textContent = 'Reports';
         document.getElementById('breadcrumb-current').textContent = 'Data Quality';
         document.getElementById('nav-dataquality').classList.add('active');
+      } else if (section === 'dashboard.html') {
+        openSection('dashboard.html', 'Dashboard', 'Reports');
       } else {
         openSection('data_quality.html', 'Data Quality', 'Reports');
       }
