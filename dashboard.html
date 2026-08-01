@@ -291,7 +291,7 @@
           responsive: true,
           maintainAspectRatio: false,
           interaction: { mode: 'index', intersect: false },
-          layout: { padding: { top: 4 } },
+          layout: { padding: { top: 4, bottom: 8 } },
           scales: {
             x: {
               title: { display: true, text: 'Month', color: '#6B6F76', font: { size: 12, weight: '600' } },
@@ -306,10 +306,11 @@
               text: chartTitle,
               color: '#121212',
               font: { size: 16, weight: '700' },
-              padding: { bottom: 20 },
+              padding: { bottom: 12 },
             },
             legend: {
-              labels: { color: '#121212', font: { size: 12 }, usePointStyle: true, pointStyle: 'circle' },
+              labels: { color: '#121212', font: { size: 12 }, usePointStyle: true, pointStyle: 'circle', padding: 20, boxHeight: 8 },
+              padding: { bottom: 20 },
             },
             tooltip: {
               backgroundColor: '#121212',
