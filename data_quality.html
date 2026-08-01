@@ -27,86 +27,10 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--sans); }
-  body { background: var(--canvas); color: var(--ink); }
-
-  .app-shell { display: flex; min-height: 100vh; }
-
-  .sidebar {
-    width: 260px;
-    flex-shrink: 0;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    padding: 24px 20px;
-    display: flex;
-    flex-direction: column;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow-y: auto;
-  }
-  .sidebar-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
-  .sidebar-logo {
-    width: 36px; height: 36px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .sidebar-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
-  .sidebar-logo svg { width: 20px; height: 20px; }
-  .sidebar-brand span { font-size: 17px; font-weight: 800; color: var(--ink); }
-
-  .sidebar-label {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--faint);
-    margin: 4px 0 12px;
-  }
-
-  .sidebar-nav { display: flex; flex-direction: column; gap: 4px; }
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: var(--radius-sm);
-    color: var(--ink);
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-  }
-  .nav-item .nav-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--faint); flex-shrink: 0; }
-  .nav-item:hover { background: var(--canvas); }
-  .nav-item.active { background: var(--blue); color: #FFFFFF; }
-  .nav-item.active .nav-dot { background: #FFFFFF; }
-
-  .nav-subitems { display: flex; flex-direction: column; gap: 1px; margin: 2px 0 6px 34px; }
-  .nav-subitem {
-    font-size: 12.5px;
-    color: var(--muted);
-    padding: 6px 8px;
-    border-radius: 6px;
-    text-decoration: none;
-  }
-  .nav-subitem:hover { background: var(--canvas); color: var(--blue-dark); }
+  body { background: var(--canvas); color: var(--ink); padding: 40px 32px; }
 
   #data-nulls, #month-coverage, #data-type-check, #funnel-ratio-validation { scroll-margin-top: 24px; }
 
-  .sidebar-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border); }
-  .user-row { display: flex; align-items: center; gap: 10px; }
-  .user-avatar {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: var(--blue-tint);
-    color: var(--blue-dark);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700;
-    flex-shrink: 0;
-  }
-  .user-name { font-size: 13px; font-weight: 700; color: var(--ink); }
-  .user-logout { font-size: 12px; color: var(--muted); }
-
-  .main-content { flex: 1; min-width: 0; padding: 40px 32px; }
   .wrap { max-width: 1400px; margin: 0 auto; }
 
   h2 {
@@ -199,39 +123,6 @@
 </style>
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="sidebar-brand">
-        <div class="sidebar-logo">
-          <img src="data:image/png;base64,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" alt="Uber Data logo" />
-        </div>
-        <span>Uber Data</span>
-      </div>
-
-      <div class="sidebar-label">Reports</div>
-      <nav class="sidebar-nav">
-        <a href="dashboard.html" class="nav-item"><span class="nav-dot"></span>Dashboard</a>
-        <a href="data_quality.html" class="nav-item active"><span class="nav-dot"></span>Data Quality</a>
-        <div class="nav-subitems">
-          <a href="#data-nulls" class="nav-subitem">Data Nulls</a>
-          <a href="#month-coverage" class="nav-subitem">Month Coverage</a>
-          <a href="#data-type-check" class="nav-subitem">Data Type Check</a>
-          <a href="#funnel-ratio-validation" class="nav-subitem">Funnel Ratio Validation</a>
-        </div>
-      </nav>
-
-      <div class="sidebar-footer">
-        <div class="user-row">
-          <div class="user-avatar">US</div>
-          <div>
-            <div class="user-name">User</div>
-            <div class="user-logout">Log out</div>
-          </div>
-        </div>
-      </div>
-    </aside>
-
-    <main class="main-content">
   <div class="wrap">
     <div class="section-card" id="data-nulls">
       <h2>DATA NULLS</h2>
@@ -14926,8 +14817,6 @@
 </script>
 <!-- FUNNEL_RATIO_VALIDATION_END -->
 
-  </div>
-    </main>
   </div>
 </body>
 </html>
