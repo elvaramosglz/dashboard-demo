@@ -172,8 +172,6 @@
   .yoy-change-context { color: var(--warn); font-weight: 700; }
   .yoy-change-neutral { color: var(--ink); font-weight: 700; }
   .yoy-note { color: var(--muted); font-style: italic; font-family: var(--sans); }
-  .yoy-narrative { margin: 4px 0 16px; padding: 14px 16px; background: var(--canvas); border-left: 4px solid var(--blue); border-radius: var(--radius-sm); font-size: 13px; line-height: 1.6; color: var(--ink); }
-  .yoy-methodology { font-size: 11.5px; color: var(--muted); line-height: 1.5; border-top: 1px solid var(--border); padding-top: 12px; cursor: help; }
 </style>
 </head>
 <body>
@@ -211,7 +209,7 @@
         <!-- YOY_CONTENT_START -->
 
 <h2>Year-Over-Year Analysis</h2>
-<p class="description">Compares a period against the same calendar month(s) one year earlier — never a different month, and never a full year against a partial year. Volume metrics are shown as YoY growth (%); rate and conversion metrics are shown as change in percentage points (pp). Choose Full Funnel to see the whole conversion path in order, or pick a single metric.</p>
+<p class="description">Compares a period against the same calendar month(s) one year earlier — never a different month, and never a full year against a partial year. Volume metrics are shown as YoY growth (%); rate and conversion metrics are shown as change in percentage points (pp). Choose All Metrics to see every metric, or pick a single metric.</p>
 
 <div class="chart-controls">
   <div class="control-group">
@@ -228,8 +226,7 @@
   <div class="control-group">
     <label for="yoy-scope-select">Metric Scope</label>
     <select id="yoy-scope-select">
-      <option value="funnel" selected>Full Funnel</option>
-      <option value="all">All Metrics</option>
+      <option value="all" selected>All Metrics</option>
       <option value="one">One Metric</option>
     </select>
   </div>
@@ -246,11 +243,6 @@
   </table>
 </div>
 
-<p class="yoy-narrative" id="yoy-narrative"></p>
-
-<p class="yoy-methodology" title="Volumes are shown as YoY growth %. Rates are shown as change in percentage points.">
-  <strong>Methodology:</strong> Year-over-year performance compares the selected period with the same calendar period in the prior year. Volume metrics are reported as percentage change, while rates and conversion metrics are reported as percentage-point change. Marketplace-level ratios are recalculated from their underlying aggregated numerators and denominators rather than averaged across cities. Missing periods are not imputed as zero.
-</p>
 
 <!-- YOY_CONTENT_END -->
       </div>
@@ -407,7 +399,6 @@
 
   // YOY_JS_START
 
-  const yoyFunnelMetrics = ["SHOPPING SESSIONS", "RS/SS", "REQUESTING SESSIONS", "C/RS", "TRIPS", "C/SS"];
   const yoyRatioComponents = {"RS/SS": ["REQUESTING SESSIONS", "SHOPPING SESSIONS"], "C/RS": ["TRIPS", "REQUESTING SESSIONS"], "C/R": ["TRIPS", "REQUESTS"], "C/SS": ["TRIPS", "SHOPPING SESSIONS"]};
   const yoyRatioMetrics = ["ACCEPTANCE RATE", "C/R", "C/RS", "C/SS", "DRIVER CANCELATION", "DRIVER INCENTIVES AND PROMOTIONS (AS % OF GB)", "DRIVER PAYMENTS (AS % OF GB)", "RIDER INCENTIVES AND PROMOTIONS (AS % OF GB)", "RS/SS", "SUPPLY UTILIZATION", "TAKE RATE (AS % OF GB)"];
   const yoyMonthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -423,7 +414,6 @@
   const yoyMetricSelect = document.getElementById('yoy-metric-select');
   const yoyTableHead = document.getElementById('yoy-table-head');
   const yoyTableBody = document.getElementById('yoy-table-body');
-  const yoyNarrativeEl = document.getElementById('yoy-narrative');
 
   function yoyMonthLabel(month) {
     const parts = month.split('-');
@@ -611,71 +601,11 @@
     return rows;
   }
 
-  function yoyDirectionWord(change) {
-    return change >= 0 ? 'increased' : 'declined';
-  }
-
-  function yoyDirectionNoun(change) {
-    return change >= 0 ? 'increase' : 'decline';
-  }
-
-  function yoyBuildNarrative(rows) {
-    const byName = {};
-    rows.forEach(function(row) { byName[row.metric] = row; });
-    const needed = ['SHOPPING SESSIONS', 'RS/SS', 'REQUESTING SESSIONS', 'C/RS', 'TRIPS', 'C/SS'];
-    const hasAll = needed.every(function(m) { return byName[m] && byName[m].change !== undefined; });
-    if (!hasAll) {
-      return 'Not enough comparable data is available to build a narrative for this selection.';
-    }
-
-    const ss = byName['SHOPPING SESSIONS'];
-    const rsss = byName['RS/SS'];
-    const rs = byName['REQUESTING SESSIONS'];
-    const crs = byName['C/RS'];
-    const trips = byName['TRIPS'];
-    const css = byName['C/SS'];
-
-    const intentMag = Math.abs(rsss.change);
-    const fulfillmentMag = Math.abs(crs.change);
-    let driver;
-    if (intentMag > fulfillmentMag * 1.2) {
-      driver = 'appears to be primarily driven by the Intent stage (RS/SS) rather than the Fulfillment stage (C/RS)';
-    } else if (fulfillmentMag > intentMag * 1.2) {
-      driver = 'appears to be primarily driven by the Fulfillment stage (C/RS) rather than the Intent stage (RS/SS)';
-    } else {
-      driver = 'may be associated with both the Intent (RS/SS) and Fulfillment (C/RS) stages fairly evenly';
-    }
-
-    return (
-      'Shopping Sessions ' + yoyDirectionWord(ss.change) + ' by ' + Math.abs(ss.change).toFixed(1) + '% year over year. ' +
-      'RS/SS ' + yoyDirectionWord(rsss.change) + ' by ' + Math.abs(rsss.change).toFixed(1) + ' percentage points, which is associated with a ' +
-      Math.abs(rs.change).toFixed(1) + '% ' + yoyDirectionNoun(rs.change) + ' in Requesting Sessions. ' +
-      'C/RS ' + yoyDirectionWord(crs.change) + ' by ' + Math.abs(crs.change).toFixed(1) + ' percentage points. ' +
-      'This suggests the overall change in conversion ' + driver + '. ' +
-      'As a result, Trips ' + yoyDirectionWord(trips.change) + ' by ' + Math.abs(trips.change).toFixed(1) + '%, ' +
-      'and overall C/SS ' + yoyDirectionWord(css.change) + ' by ' + Math.abs(css.change).toFixed(1) + ' percentage points.'
-    );
-  }
-
   function yoyRender() {
     const periods = yoyBuildPeriods();
     const scope = yoyScopeSelect.value;
-    let metrics;
-    if (scope === 'funnel') {
-      metrics = yoyFunnelMetrics;
-    } else if (scope === 'all') {
-      metrics = yoyAllMetrics;
-    } else {
-      metrics = [yoyMetricSelect.value];
-    }
-    const rows = yoyRenderTable(periods, metrics);
-
-    if (scope === 'funnel') {
-      yoyNarrativeEl.style.display = '';
-      yoyNarrativeEl.textContent = yoyBuildNarrative(rows);
-    } else {
-      yoyNarrativeEl.style.display = 'none';
-    }
+    const metrics = scope === 'all' ? yoyAllMetrics : [yoyMetricSelect.value];
+    yoyRenderTable(periods, metrics);
   }
 
   yoyScopeSelect.addEventListener('change', function() {
