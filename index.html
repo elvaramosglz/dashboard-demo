@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Demo</title>
+<style>
+  /* ============================================
+     CONFIGURE HERE: palette (Uber)
+     ============================================ */
+  :root {
+    --uber-blue: #276EF1;
+    --uber-blue-dark: #1E54BD;
+    --uber-blue-tint: #EAF1FE;
+    --uber-black: #121212;
+    --uber-gray-100: #F6F6F8;
+    --uber-gray-200: #E7E8EC;
+    --uber-gray-400: #ADADAD;
+    --uber-gray-600: #6B7280;
+    --sidebar-width: 240px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+  body { background: var(--uber-gray-100); min-height: 100vh; }
+
+  /* --- Login screen --- */
+  #login-screen {
+    position: relative;
+    display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    overflow: hidden;
+    background: #0a0a0a;
+  }
+  #login-bg {
+    position: absolute; top:0; left:0; right:0; bottom:0;
+    background-image: url('login-bg.jpg');
+    background-size: cover;
+    background-position: center 30%;
+    animation: bgZoom 12s ease-out forwards;
+  }
+  #login-bg::after {
+    content: "";
+    position: absolute; top:0; left:0; right:0; bottom:0;
+    background: linear-gradient(180deg, rgba(10,10,15,0.55) 0%, rgba(10,15,30,0.75) 100%);
+  }
+  @keyframes bgZoom {
+    from { transform: scale(1.08); }
+    to { transform: scale(1); }
+  }
+
+  #login-box {
+    position: relative;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    width: 320px;
+    text-align: center;
+
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+    animation: loginReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 1.6s;
+  }
+  @keyframes loginReveal {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  #login-box .login-logo { width: 40px; height: 40px; margin: 0 auto 16px auto; display: block; }
+  #login-box h1 { font-size: 20px; margin-bottom: 4px; color: #111; }
+  #login-box p { font-size: 13px; color: var(--uber-gray-600); margin-bottom: 20px; }
+  #login-box input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border: 1px solid var(--uber-gray-200);
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+  }
+  #login-box input:focus { outline: none; border-color: var(--uber-blue); }
+  #login-box button {
+    width: 100%;
+    padding: 10px;
+    background: var(--uber-blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  #login-box button:hover { background: var(--uber-blue-dark); }
+  #error-msg { color: #D44333; font-size: 13px; margin-top: 8px; display: none; }
+
+  /* --- App shell --- */
+  #app-shell { display: none; min-height: 100vh; }
+  #app-shell.visible { display: flex; }
+
+  /* Sidebar */
+  #sidebar {
+    width: var(--sidebar-width);
+    flex-shrink: 0;
+    background: white;
+    border-right: 1px solid var(--uber-gray-200);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; padding: 0 8px; margin-bottom: 32px; }
+  .brand img { width: 28px; height: 28px; }
+  .brand span { font-size: 17px; font-weight: 700; color: var(--uber-black); letter-spacing: -0.2px; }
+
+  .nav-label { font-size: 11px; color: var(--uber-gray-400); text-transform: uppercase; letter-spacing: 0.5px; padding: 0 8px; margin-bottom: 8px; font-weight: 600; }
+  .nav-list { list-style: none; margin-bottom: 24px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-bottom: 4px;
+    transition: background 0.15s;
+  }
+  .nav-item .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--uber-gray-400); flex-shrink: 0; }
+  .nav-item:hover { background: var(--uber-gray-100); }
+  .nav-item.active { background: var(--uber-blue); color: white; }
+  .nav-item.active .dot { background: white; }
+
+  .nav-sublist { list-style: none; margin: 0 0 4px 0; }
+  .nav-subitem {
+    padding: 7px 12px 7px 30px;
+    font-size: 13px;
+    color: var(--uber-gray-600);
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 2px;
+    transition: background 0.15s;
+  }
+  .nav-subitem:hover { background: var(--uber-gray-100); color: #111; }
+  .nav-subitem.active { background: var(--uber-blue-tint); color: var(--uber-blue-dark); font-weight: 600; }
+
+  .sidebar-spacer { flex: 1; }
+  .user-chip { display: flex; align-items: center; gap: 10px; padding: 10px 8px; border-top: 1px solid var(--uber-gray-200); margin-top: 8px; }
+  .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--uber-blue-tint); color: var(--uber-blue); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+  .user-info { flex: 1; min-width: 0; }
+  .user-info .name { font-size: 13px; font-weight: 600; color: #111; }
+  .user-info .action { font-size: 12px; color: var(--uber-gray-600); cursor: pointer; }
+  .user-info .action:hover { color: var(--uber-blue); }
+
+  /* Main area */
+  #main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  #topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 32px;
+    background: white;
+    border-bottom: 1px solid var(--uber-gray-200);
+  }
+  #topbar .title-block h1 { font-size: 19px; color: #111; margin-bottom: 2px; }
+  #topbar .title-block .breadcrumb { font-size: 12px; color: var(--uber-gray-600); }
+  #topbar .breadcrumb .current { color: var(--uber-blue); font-weight: 600; }
+  #topbar .top-actions { display: flex; align-items: center; gap: 10px; }
+  .icon-btn {
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid var(--uber-gray-200);
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 14px; color: var(--uber-gray-600);
+  }
+  .icon-btn:hover { border-color: var(--uber-blue); color: var(--uber-blue); }
+
+  #content-frame-wrap { flex: 1; padding: 24px 32px; }
+  #content-frame { width: 100%; height: 100%; min-height: calc(100vh - 140px); border: none; }
+</style>
+</head>
+<body>
+
+  <!-- PANTALLA DE LOGIN -->
+  <div id="login-screen">
+    <div id="login-bg"></div>
+    <div id="login-box">
+      <img class="login-logo" src="data:image/png;base64,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" alt="Uber">
+      <h1>Dashboard Access</h1>
+      <p>Enter your credentials to continue</p>
+      <input type="text" id="input-username" placeholder="Username">
+      <input type="password" id="input-password" placeholder="Password">
+      <button onclick="verifyLogin()">Sign In</button>
+      <div id="error-msg">Incorrect username or password</div>
+    </div>
+  </div>
+
+  <!-- APP SHELL -->
+  <div id="app-shell">
+    <div id="sidebar">
+      <div class="brand">
+        <img src="data:image/png;base64,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" alt="Uber">
+        <span>Uber Data</span>
+      </div>
+
+      <div class="nav-label">Reports</div>
+      <ul class="nav-list">
+        <li class="nav-item" id="nav-dataquality" onclick="openSection('data_quality.html', 'Data Quality', 'Reports')">
+          <span class="dot"></span> Data Quality
+        </li>
+        <ul class="nav-sublist" id="dataquality-sublist">
+          <li class="nav-subitem" onclick="openDataQualitySection('data-nulls', 'Data Nulls', this)">Data Nulls</li>
+          <li class="nav-subitem" onclick="openDataQualitySection('month-coverage', 'Month Coverage', this)">Month Coverage</li>
+          <li class="nav-subitem" onclick="openDataQualitySection('data-type-check', 'Data Type Check', this)">Data Type Check</li>
+          <li class="nav-subitem" onclick="openDataQualitySection('funnel-ratio-validation', 'Funnel Ratio Validation', this)">Funnel Ratio Validation</li>
+        </ul>
+        <li class="nav-item" id="nav-dashboard" onclick="openSection('dashboard.html', 'Performance Explorer', 'Reports')">
+          <span class="dot"></span> Performance Explorer
+        </li>
+        <ul class="nav-sublist" id="dashboard-sublist">
+          <li class="nav-subitem" onclick="openDashboardSection('metric-over-time', 'Metric Over Time', this)">Metric Over Time</li>
+          <li class="nav-subitem" onclick="openDashboardSection('year-over-year', 'Year-Over-Year Analysis', this)">Year-Over-Year Analysis</li>
+        </ul>
+        <li class="nav-item" id="nav-methodology" onclick="openSection('methodology.html', 'Methodology', 'Reports')">
+          <span class="dot"></span> Methodology
+        </li>
+        <ul class="nav-sublist" id="methodology-sublist">
+          <li class="nav-subitem" onclick="openMethodologySection('peer-groups-structural-size', 'Step 1 - Peer Groups by Structural Size', this)">Step 1 - Peer Groups by Structural Size</li>
+          <li class="nav-subitem" onclick="openMethodologySection('own-history-benchmark', 'Step 2 - Own History Benchmark', this)">Step 2 - Own History Benchmark</li>
+          <li class="nav-subitem" onclick="openMethodologySection('own-trajectory-yoy', 'Step 3 - Own Trajectory YoY', this)">Step 3 - Own Trajectory YoY</li>
+          <li class="nav-subitem" onclick="openMethodologySection('peer-benchmark', 'Step 4 - Peer Benchmark', this)">Step 4 - Peer Benchmark</li>
+          <li class="nav-subitem" onclick="openMethodologySection('dual-score', 'Step 5 - Dual Score', this)">Step 5 - Dual Score</li>
+        </ul>
+      </ul>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar"></div>
+        <div class="user-info">
+          <div class="name" id="user-name"></div>
+          <div class="action" onclick="logOut()">Log out</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="main">
+      <div id="topbar">
+        <div class="title-block">
+          <h1 id="content-title">Performance Explorer</h1>
+          <div class="breadcrumb"><span id="breadcrumb-section">Reports</span> / <span class="current" id="breadcrumb-current">Performance Explorer</span></div>
+        </div>
+        <div class="top-actions">
+          <div class="icon-btn" title="Reload" onclick="document.getElementById('content-frame').src = document.getElementById('content-frame').src;">&#8635;</div>
+        </div>
+      </div>
+      <div id="content-frame-wrap">
+        <iframe id="content-frame" src=""></iframe>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ============================================
+  // CONFIGURE HERE: demo username and password
+  // ============================================
+  const USERNAME = "demo";
+  const PASSWORD = "demo123";
+
+  // ============================================
+  // CONFIGURE HERE: display name shown in the sidebar
+  // Leave generic \u2014 this page may be opened by someone else
+  // ============================================
+  const DISPLAY_NAME = "User";
+
+  function verifyLogin() {
+    const username = document.getElementById('input-username').value;
+    const password = document.getElementById('input-password').value;
+    const errorMsg = document.getElementById('error-msg');
+
+    if (username === USERNAME && password === PASSWORD) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app-shell').classList.add('visible');
+      openSection('dashboard.html', 'Performance Explorer', 'Reports');
+      sessionStorage.setItem('loggedIn', 'true');
+    } else {
+      errorMsg.style.display = 'block';
+    }
+  }
+
+  function openSection(file, title, group) {
+    document.getElementById('content-frame').src = file;
+    document.getElementById('content-title').textContent = title;
+    document.getElementById('breadcrumb-current').textContent = title;
+    document.getElementById('breadcrumb-section').textContent = group;
+
+    document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+    document.querySelectorAll('.nav-subitem').forEach(function(el) { el.classList.remove('active'); });
+    if (file === 'dashboard.html') {
+      document.getElementById('nav-dashboard').classList.add('active');
+    } else if (file === 'methodology.html') {
+      document.getElementById('nav-methodology').classList.add('active');
+    } else {
+      document.getElementById('nav-dataquality').classList.add('active');
+    }
+
+    sessionStorage.setItem('section', file);
+    sessionStorage.removeItem('section-hash');
+  }
+
+  function openDataQualitySection(hash, label, el) {
+    document.getElementById('content-frame').src = 'data_quality.html#' + hash;
+    document.getElementById('content-title').textContent = 'Data Quality';
+    document.getElementById('breadcrumb-section').textContent = 'Reports';
+    document.getElementById('breadcrumb-current').textContent = label;
+
+    document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+    document.getElementById('nav-dataquality').classList.add('active');
+
+    document.querySelectorAll('.nav-subitem').forEach(function(el) { el.classList.remove('active'); });
+    if (el) { el.classList.add('active'); }
+
+    sessionStorage.setItem('section', 'data_quality.html');
+    sessionStorage.setItem('section-hash', hash);
+  }
+
+  function openDashboardSection(hash, label, el) {
+    document.getElementById('content-frame').src = 'dashboard.html#' + hash;
+    document.getElementById('content-title').textContent = 'Performance Explorer';
+    document.getElementById('breadcrumb-section').textContent = 'Reports';
+    document.getElementById('breadcrumb-current').textContent = label;
+
+    document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+    document.getElementById('nav-dashboard').classList.add('active');
+
+    document.querySelectorAll('.nav-subitem').forEach(function(el) { el.classList.remove('active'); });
+    if (el) { el.classList.add('active'); }
+
+    sessionStorage.setItem('section', 'dashboard.html');
+    sessionStorage.setItem('section-hash', hash);
+  }
+
+  function openMethodologySection(hash, label, el) {
+    document.getElementById('content-frame').src = 'methodology.html#' + hash;
+    document.getElementById('content-title').textContent = 'Methodology';
+    document.getElementById('breadcrumb-section').textContent = 'Reports';
+    document.getElementById('breadcrumb-current').textContent = label;
+
+    document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+    document.getElementById('nav-methodology').classList.add('active');
+
+    document.querySelectorAll('.nav-subitem').forEach(function(el) { el.classList.remove('active'); });
+    if (el) { el.classList.add('active'); }
+
+    sessionStorage.setItem('section', 'methodology.html');
+    sessionStorage.setItem('section-hash', hash);
+  }
+
+  function logOut() {
+    sessionStorage.removeItem('loggedIn');
+    sessionStorage.removeItem('section');
+    location.reload();
+  }
+
+  window.onload = function() {
+    document.getElementById('user-name').textContent = DISPLAY_NAME;
+    document.getElementById('user-avatar').textContent = DISPLAY_NAME.slice(0, 2).toUpperCase();
+
+    if (sessionStorage.getItem('loggedIn') === 'true') {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app-shell').classList.add('visible');
+      const section = sessionStorage.getItem('section') || 'dashboard.html';
+      const hash = sessionStorage.getItem('section-hash');
+      if (hash && section === 'dashboard.html') {
+        document.getElementById('content-frame').src = 'dashboard.html#' + hash;
+        document.getElementById('content-title').textContent = 'Performance Explorer';
+        document.getElementById('breadcrumb-section').textContent = 'Reports';
+        document.getElementById('breadcrumb-current').textContent = 'Performance Explorer';
+        document.getElementById('nav-dashboard').classList.add('active');
+      } else if (hash && section === 'data_quality.html') {
+        document.getElementById('content-frame').src = 'data_quality.html#' + hash;
+        document.getElementById('content-title').textContent = 'Data Quality';
+        document.getElementById('breadcrumb-section').textContent = 'Reports';
+        document.getElementById('breadcrumb-current').textContent = 'Data Quality';
+        document.getElementById('nav-dataquality').classList.add('active');
+      } else if (hash && section === 'methodology.html') {
+        document.getElementById('content-frame').src = 'methodology.html#' + hash;
+        document.getElementById('content-title').textContent = 'Methodology';
+        document.getElementById('breadcrumb-section').textContent = 'Reports';
+        const methodologyLabels = {
+          'peer-groups-structural-size': 'Step 1 - Peer Groups by Structural Size',
+          'own-history-benchmark': 'Step 2 - Own History Benchmark',
+          'own-trajectory-yoy': 'Step 3 - Own Trajectory YoY',
+          'peer-benchmark': 'Step 4 - Peer Benchmark'
+        };
+        document.getElementById('breadcrumb-current').textContent = methodologyLabels[hash] || 'Methodology';
+        document.getElementById('nav-methodology').classList.add('active');
+      } else if (section === 'dashboard.html') {
+        openSection('dashboard.html', 'Performance Explorer', 'Reports');
+      } else if (section === 'methodology.html') {
+        openSection('methodology.html', 'Methodology', 'Reports');
+      } else {
+        openSection('data_quality.html', 'Data Quality', 'Reports');
+      }
+    }
+  };
+
+  document.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') {
+      verifyLogin();
+    }
+  });
+</script>
+
+</body>
+</html>
