@@ -213,14 +213,16 @@
           <li class="nav-subitem" onclick="openDataQualitySection('data-type-check', 'Data Type Check', this)">Data Type Check</li>
           <li class="nav-subitem" onclick="openDataQualitySection('funnel-ratio-validation', 'Funnel Ratio Validation', this)">Funnel Ratio Validation</li>
         </ul>
-        <li class="nav-item" id="nav-dashboard" onclick="openSection('dashboard.html', 'Dashboard', 'Reports')">
-          <span class="dot"></span> Dashboard
+        <li class="nav-item" id="nav-dashboard" onclick="openSection('dashboard.html', 'Performance Explorer', 'Reports')">
+          <span class="dot"></span> Performance Explorer
         </li>
         <ul class="nav-sublist" id="dashboard-sublist">
           <li class="nav-subitem" onclick="openDashboardSection('metric-over-time', 'Metric Over Time', this)">Metric Over Time</li>
-          <li class="nav-subitem" onclick="openDashboardSection('revenue-by-product', 'Revenue By Product', this)">Revenue By Product</li>
-          <li class="nav-subitem" onclick="openDashboardSection('units-distribution', 'Units Distribution', this)">Units Distribution</li>
+          <li class="nav-subitem" onclick="openDashboardSection('year-over-year', 'Year-Over-Year Analysis', this)">Year-Over-Year Analysis</li>
         </ul>
+        <li class="nav-item" id="nav-methodology" onclick="openSection('methodology.html', 'Methodology', 'Reports')">
+          <span class="dot"></span> Methodology
+        </li>
       </ul>
 
       <div class="sidebar-spacer"></div>
@@ -237,8 +239,8 @@
     <div id="main">
       <div id="topbar">
         <div class="title-block">
-          <h1 id="content-title">Dashboard</h1>
-          <div class="breadcrumb"><span id="breadcrumb-section">Reports</span> / <span class="current" id="breadcrumb-current">Dashboard</span></div>
+          <h1 id="content-title">Performance Explorer</h1>
+          <div class="breadcrumb"><span id="breadcrumb-section">Reports</span> / <span class="current" id="breadcrumb-current">Performance Explorer</span></div>
         </div>
         <div class="top-actions">
           <div class="icon-btn" title="Reload" onclick="document.getElementById('content-frame').src = document.getElementById('content-frame').src;">&#8635;</div>
@@ -271,7 +273,7 @@
     if (username === USERNAME && password === PASSWORD) {
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('app-shell').classList.add('visible');
-      openSection('dashboard.html', 'Dashboard', 'Reports');
+      openSection('dashboard.html', 'Performance Explorer', 'Reports');
       sessionStorage.setItem('loggedIn', 'true');
     } else {
       errorMsg.style.display = 'block';
@@ -288,6 +290,8 @@
     document.querySelectorAll('.nav-subitem').forEach(function(el) { el.classList.remove('active'); });
     if (file === 'dashboard.html') {
       document.getElementById('nav-dashboard').classList.add('active');
+    } else if (file === 'methodology.html') {
+      document.getElementById('nav-methodology').classList.add('active');
     } else {
       document.getElementById('nav-dataquality').classList.add('active');
     }
@@ -314,7 +318,7 @@
 
   function openDashboardSection(hash, label, el) {
     document.getElementById('content-frame').src = 'dashboard.html#' + hash;
-    document.getElementById('content-title').textContent = 'Dashboard';
+    document.getElementById('content-title').textContent = 'Performance Explorer';
     document.getElementById('breadcrumb-section').textContent = 'Reports';
     document.getElementById('breadcrumb-current').textContent = label;
 
@@ -345,9 +349,9 @@
       const hash = sessionStorage.getItem('section-hash');
       if (hash && section === 'dashboard.html') {
         document.getElementById('content-frame').src = 'dashboard.html#' + hash;
-        document.getElementById('content-title').textContent = 'Dashboard';
+        document.getElementById('content-title').textContent = 'Performance Explorer';
         document.getElementById('breadcrumb-section').textContent = 'Reports';
-        document.getElementById('breadcrumb-current').textContent = 'Dashboard';
+        document.getElementById('breadcrumb-current').textContent = 'Performance Explorer';
         document.getElementById('nav-dashboard').classList.add('active');
       } else if (hash && section === 'data_quality.html') {
         document.getElementById('content-frame').src = 'data_quality.html#' + hash;
@@ -356,7 +360,9 @@
         document.getElementById('breadcrumb-current').textContent = 'Data Quality';
         document.getElementById('nav-dataquality').classList.add('active');
       } else if (section === 'dashboard.html') {
-        openSection('dashboard.html', 'Dashboard', 'Reports');
+        openSection('dashboard.html', 'Performance Explorer', 'Reports');
+      } else if (section === 'methodology.html') {
+        openSection('methodology.html', 'Methodology', 'Reports');
       } else {
         openSection('data_quality.html', 'Data Quality', 'Reports');
       }

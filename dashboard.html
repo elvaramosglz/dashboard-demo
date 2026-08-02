@@ -29,7 +29,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--sans); }
   body { background: var(--canvas); color: var(--ink); padding: 40px 32px; }
   .wrap { max-width: 1400px; margin: 0 auto; }
-  #metric-over-time, #revenue-by-product, #units-distribution { scroll-margin-top: 24px; }
+  #metric-over-time, #year-over-year { scroll-margin-top: 24px; }
 
   h2 {
     position: relative;
@@ -60,7 +60,7 @@
   .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto auto;
     gap: 24px;
     min-height: calc(100vh - 80px);
   }
@@ -76,9 +76,7 @@
     overflow: hidden;
   }
   .panel-left { grid-column: 1 / 3; grid-row: 1; min-height: 560px; }
-  .panel-top-right { grid-column: 1; grid-row: 2; }
-  .panel-bottom-right { grid-column: 2; grid-row: 2; }
-  .panel-yoy { grid-column: 1 / 3; grid-row: 3; }
+  .panel-yoy { grid-column: 1 / 3; grid-row: 2; }
 
   .chart-placeholder {
     flex: 1;
@@ -196,14 +194,6 @@
         <div class="chart-canvas-wrap">
           <canvas id="metric-chart"></canvas>
         </div>
-      </div>
-      <div class="panel panel-top-right" id="revenue-by-product">
-        <h2>Revenue By Product</h2>
-        <div class="chart-placeholder">Chart pending connection to real data.</div>
-      </div>
-      <div class="panel panel-bottom-right" id="units-distribution">
-        <h2>Units Distribution</h2>
-        <div class="chart-placeholder">Chart pending connection to real data.</div>
       </div>
       <div class="panel panel-yoy" id="year-over-year">
         <!-- YOY_CONTENT_START -->
