@@ -227,6 +227,7 @@
           <li class="nav-subitem" onclick="openMethodologySection('peer-groups-structural-size', 'Step 1 - Peer Groups by Structural Size', this)">Step 1 - Peer Groups by Structural Size</li>
           <li class="nav-subitem" onclick="openMethodologySection('own-history-benchmark', 'Step 2 - Own History Benchmark', this)">Step 2 - Own History Benchmark</li>
           <li class="nav-subitem" onclick="openMethodologySection('own-trajectory-yoy', 'Step 3 - Own Trajectory YoY', this)">Step 3 - Own Trajectory YoY</li>
+          <li class="nav-subitem" onclick="openMethodologySection('peer-benchmark', 'Step 4 - Peer Benchmark', this)">Step 4 - Peer Benchmark</li>
         </ul>
       </ul>
 
@@ -387,7 +388,8 @@
         const methodologyLabels = {
           'peer-groups-structural-size': 'Step 1 - Peer Groups by Structural Size',
           'own-history-benchmark': 'Step 2 - Own History Benchmark',
-          'own-trajectory-yoy': 'Step 3 - Own Trajectory YoY'
+          'own-trajectory-yoy': 'Step 3 - Own Trajectory YoY',
+          'peer-benchmark': 'Step 4 - Peer Benchmark'
         };
         document.getElementById('breadcrumb-current').textContent = methodologyLabels[hash] || 'Methodology';
         document.getElementById('nav-methodology').classList.add('active');
