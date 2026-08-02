@@ -211,7 +211,7 @@
         <!-- YOY_CONTENT_START -->
 
 <h2>Year-Over-Year Analysis</h2>
-<p class="description">Compares a period against the same calendar month(s) one year earlier. Volume metrics are shown as YoY growth (%); rate and conversion metrics are shown as change in percentage points (pp). Choose Full Funnel to see the whole conversion path in order, or pick a single metric.</p>
+<p class="description">Compares a period against the same calendar month(s) one year earlier — never a different month, and never a full year against a partial year. Volume metrics are shown as YoY growth (%); rate and conversion metrics are shown as change in percentage points (pp). Choose Full Funnel to see the whole conversion path in order, or pick a single metric.</p>
 
 <div class="chart-controls">
   <div class="control-group">
@@ -226,15 +226,10 @@
     </div>
   </div>
   <div class="control-group">
-    <label for="yoy-view-select">View</label>
-    <select id="yoy-view-select">
-      <option value="monthly" selected>Monthly</option>
-      <option value="ytd">YTD</option>
-    </select>
-  </div>
-  <div class="control-group">
     <label for="yoy-scope-select">Metric Scope</label>
     <select id="yoy-scope-select">
+      <option value="funnel" selected>Full Funnel</option>
+      <option value="all">All Metrics</option>
       <option value="one">One Metric</option>
     </select>
   </div>
@@ -253,6 +248,9 @@
 
 <p class="yoy-narrative" id="yoy-narrative"></p>
 
+<p class="yoy-methodology" title="Volumes are shown as YoY growth %. Rates are shown as change in percentage points.">
+  <strong>Methodology:</strong> Year-over-year performance compares the selected period with the same calendar period in the prior year. Volume metrics are reported as percentage change, while rates and conversion metrics are reported as percentage-point change. Marketplace-level ratios are recalculated from their underlying aggregated numerators and denominators rather than averaged across cities. Missing periods are not imputed as zero.
+</p>
 
 <!-- YOY_CONTENT_END -->
       </div>
@@ -409,17 +407,17 @@
 
   // YOY_JS_START
 
-  const yoyFunnelMetrics = __FUNNEL_METRICS__;
+  const yoyFunnelMetrics = ["SHOPPING SESSIONS", "RS/SS", "REQUESTING SESSIONS", "C/RS", "TRIPS", "C/SS"];
   const yoyRatioComponents = {"RS/SS": ["REQUESTING SESSIONS", "SHOPPING SESSIONS"], "C/RS": ["TRIPS", "REQUESTING SESSIONS"], "C/R": ["TRIPS", "REQUESTS"], "C/SS": ["TRIPS", "SHOPPING SESSIONS"]};
   const yoyRatioMetrics = ["ACCEPTANCE RATE", "C/R", "C/RS", "C/SS", "DRIVER CANCELATION", "DRIVER INCENTIVES AND PROMOTIONS (AS % OF GB)", "DRIVER PAYMENTS (AS % OF GB)", "RIDER INCENTIVES AND PROMOTIONS (AS % OF GB)", "RS/SS", "SUPPLY UTILIZATION", "TAKE RATE (AS % OF GB)"];
   const yoyMonthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const yoyPolarity = {"TRIPS": "good_up", "C/SS": "good_up", "SHOPPING SESSIONS": "good_up", "REQUESTING SESSIONS": "good_up", "REQUESTS": "good_up", "RS/SS": "good_up", "C/RS": "good_up", "C/R": "good_up", "ACCEPTANCE RATE": "good_up", "DRIVER CANCELATION": "bad_up", "SUPPLY UTILIZATION": "context", "TAKE RATE (AS % OF GB)": "context"};
+  const yoyAllMetrics = ["TRIPS", "GROSS BOOKINGS (GB)", "SHOPPING SESSIONS", "RIDERS WITH SESSIONS", "REQUESTING SESSIONS", "REQUESTS", "ACTIVE DRIVERS", "SUPPLY HOURS", "C/R", "C/RS", "RS/SS", "C/SS", "ACCEPTANCE RATE", "DRIVER CANCELATION", "SUPPLY UTILIZATION", "NPI", "DRIVER PAYMENTS (AS % OF GB)", "RIDER INCENTIVES AND PROMOTIONS (AS % OF GB)", "DRIVER INCENTIVES AND PROMOTIONS (AS % OF GB)", "TAKE RATE (AS % OF GB)"];
 
   const yoyMonthSelect = document.getElementById('yoy-month-select');
   const yoyCityToggle = document.getElementById('yoy-city-toggle');
   const yoyCityPanel = document.getElementById('yoy-city-panel');
   const yoyCityCheckboxes = Array.from(document.querySelectorAll('.yoy-city-checkbox'));
-  const yoyViewSelect = document.getElementById('yoy-view-select');
   const yoyScopeSelect = document.getElementById('yoy-scope-select');
   const yoyMetricGroup = document.getElementById('yoy-metric-group');
   const yoyMetricSelect = document.getElementById('yoy-metric-select');
@@ -570,29 +568,8 @@
     };
   }
 
-  function yoyYtdMonths(targetMonth) {
-    const parts = targetMonth.split('-');
-    const year = parts[0];
-    const lastMo = parseInt(parts[1], 10);
-    const months = [];
-    for (let m = 1; m <= lastMo; m++) {
-      months.push(year + '-' + String(m).padStart(2, '0'));
-    }
-    return months;
-  }
-
   function yoyBuildPeriods() {
     const targetMonth = yoyMonthSelect.value;
-    const view = yoyViewSelect.value;
-    if (view === 'ytd') {
-      const currentMonths = yoyYtdMonths(targetMonth);
-      const priorMonths = currentMonths.map(yoyPriorYearMonth);
-      return {
-        currentMonths: currentMonths, priorMonths: priorMonths,
-        priorLabel: yoyMonthLabel(priorMonths[0]) + ' – ' + yoyMonthLabel(priorMonths[priorMonths.length - 1]),
-        currentLabel: yoyMonthLabel(currentMonths[0]) + ' – ' + yoyMonthLabel(currentMonths[currentMonths.length - 1]),
-      };
-    }
     const priorMonth = yoyPriorYearMonth(targetMonth);
     return {
       currentMonths: [targetMonth], priorMonths: [priorMonth],
@@ -683,7 +660,14 @@
   function yoyRender() {
     const periods = yoyBuildPeriods();
     const scope = yoyScopeSelect.value;
-    const metrics = scope === 'funnel' ? yoyFunnelMetrics : [yoyMetricSelect.value];
+    let metrics;
+    if (scope === 'funnel') {
+      metrics = yoyFunnelMetrics;
+    } else if (scope === 'all') {
+      metrics = yoyAllMetrics;
+    } else {
+      metrics = [yoyMetricSelect.value];
+    }
     const rows = yoyRenderTable(periods, metrics);
 
     if (scope === 'funnel') {
@@ -699,7 +683,6 @@
     yoyRender();
   });
   yoyMonthSelect.addEventListener('change', yoyRender);
-  yoyViewSelect.addEventListener('change', yoyRender);
   yoyMetricSelect.addEventListener('change', yoyRender);
   yoyCityCheckboxes.forEach(function(cb) {
     cb.addEventListener('change', function() {
