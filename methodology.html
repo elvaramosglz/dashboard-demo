@@ -33,8 +33,8 @@
 </style>
 </head>
 <body>
-<div class="wrap"><div class="panel">
-<h2>STEP 3 — PEER GROUPS BY STRUCTURAL SIZE</h2>
+<div class="wrap"><div class="panel" id="peer-groups-structural-size">
+<h2>STEP 1 — PEER GROUPS BY STRUCTURAL SIZE</h2>
 <p class="description">Cities are grouped by structural marketplace size, measured as average Trips across the full 21-month period. Acceptance Rate, C/RS, RS/SS, Take Rate and other performance metrics are not used in the grouping because those are outcomes the framework is designed to diagnose. This prevents circular logic: peer groups describe scale, not whether a city is performing well or poorly.</p>
 <div class="section-title">Formulas and decision rules</div>
 <div class="formula-grid"><div class="formula-card"><div class="formula-name">Average Trips (21m)</div><div class="formula-text">Average Tripsᵢ = Σ Monthly Tripsᵢ ÷ Number of Months</div></div><div class="formula-card"><div class="formula-name">Portfolio P33</div><div class="formula-text">P33 = 33rd percentile of the eight city-level Average Trips values</div></div><div class="formula-card"><div class="formula-name">Portfolio P67</div><div class="formula-text">P67 = 67th percentile of the eight city-level Average Trips values</div></div><div class="formula-card"><div class="formula-name">Peer Group</div><div class="formula-text">Large if Average Trips ≥ P67; Medium if P33 ≤ Average Trips &lt; P67; Small if Average Trips &lt; P33</div></div><div class="formula-card"><div class="formula-name">Cities in Group</div><div class="formula-text">Count of cities with the same Peer Group classification</div></div><div class="formula-card"><div class="formula-name">CoV Trips (21m)</div><div class="formula-text">CoVᵢ = Sample Standard Deviation of Monthly Tripsᵢ ÷ Average Tripsᵢ</div></div></div>
@@ -42,8 +42,8 @@
 <div class="table-wrap"><table><thead><tr>
 <th>City</th><th>Average Trips (21m)</th><th>Peer Group</th><th># Cities in Group</th><th>CoV Trips (21m)</th>
 </tr></thead><tbody><tr><td class="city-cell">Azteca</td><td>2,822,523</td><td><span class="group-badge group-medium">Medium</span></td><td>2</td><td>0.10</td></tr><tr><td class="city-cell">Lusail</td><td>2,319,055</td><td><span class="group-badge group-small">Small</span></td><td>3</td><td>0.05</td></tr><tr><td class="city-cell">Maracanã</td><td>4,686,694</td><td><span class="group-badge group-large">Large</span></td><td>3</td><td>0.16</td></tr><tr><td class="city-cell">Old Trafford</td><td>13,019,570</td><td><span class="group-badge group-large">Large</span></td><td>3</td><td>0.08</td></tr><tr><td class="city-cell">Rose Bowl</td><td>1,958,555</td><td><span class="group-badge group-small">Small</span></td><td>3</td><td>0.16</td></tr><tr><td class="city-cell">San Siro</td><td>8,851,678</td><td><span class="group-badge group-large">Large</span></td><td>3</td><td>0.05</td></tr><tr><td class="city-cell">Santiago Bernabeu</td><td>2,690,343</td><td><span class="group-badge group-small">Small</span></td><td>3</td><td>0.14</td></tr><tr><td class="city-cell">Vila Belmiro</td><td>3,701,210</td><td><span class="group-badge group-medium">Medium</span></td><td>2</td><td>0.10</td></tr></tbody></table></div>
-<div class="note"><strong>How to interpret CoV:</strong> CoV is displayed as a decimal ratio, matching the workbook. For example, 0.10 means that the sample standard deviation equals 10% of the city's Average Trips. A higher CoV signals variability but does not identify its cause.</div>
-<div class="note"><strong>Why only Trips?</strong> The objective is to group cities by structure, not by performance. The framework subsequently diagnoses performance inside each structurally comparable peer group.</div>
+
+
 </div></div>
 </body>
 </html>

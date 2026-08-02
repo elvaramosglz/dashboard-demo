@@ -223,6 +223,9 @@
         <li class="nav-item" id="nav-methodology" onclick="openSection('methodology.html', 'Methodology', 'Reports')">
           <span class="dot"></span> Methodology
         </li>
+        <ul class="nav-sublist" id="methodology-sublist">
+          <li class="nav-subitem" onclick="openMethodologySection('peer-groups-structural-size', 'Peer Groups by Structural Size', this)">Peer Groups by Structural Size</li>
+        </ul>
       </ul>
 
       <div class="sidebar-spacer"></div>
@@ -332,6 +335,22 @@
     sessionStorage.setItem('section-hash', hash);
   }
 
+  function openMethodologySection(hash, label, el) {
+    document.getElementById('content-frame').src = 'methodology.html#' + hash;
+    document.getElementById('content-title').textContent = 'Methodology';
+    document.getElementById('breadcrumb-section').textContent = 'Reports';
+    document.getElementById('breadcrumb-current').textContent = label;
+
+    document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+    document.getElementById('nav-methodology').classList.add('active');
+
+    document.querySelectorAll('.nav-subitem').forEach(function(el) { el.classList.remove('active'); });
+    if (el) { el.classList.add('active'); }
+
+    sessionStorage.setItem('section', 'methodology.html');
+    sessionStorage.setItem('section-hash', hash);
+  }
+
   function logOut() {
     sessionStorage.removeItem('loggedIn');
     sessionStorage.removeItem('section');
@@ -359,6 +378,12 @@
         document.getElementById('breadcrumb-section').textContent = 'Reports';
         document.getElementById('breadcrumb-current').textContent = 'Data Quality';
         document.getElementById('nav-dataquality').classList.add('active');
+      } else if (hash && section === 'methodology.html') {
+        document.getElementById('content-frame').src = 'methodology.html#' + hash;
+        document.getElementById('content-title').textContent = 'Methodology';
+        document.getElementById('breadcrumb-section').textContent = 'Reports';
+        document.getElementById('breadcrumb-current').textContent = 'Peer Groups by Structural Size';
+        document.getElementById('nav-methodology').classList.add('active');
       } else if (section === 'dashboard.html') {
         openSection('dashboard.html', 'Performance Explorer', 'Reports');
       } else if (section === 'methodology.html') {
