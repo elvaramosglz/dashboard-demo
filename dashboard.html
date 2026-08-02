@@ -211,7 +211,7 @@
         <!-- YOY_CONTENT_START -->
 
 <h2>Year-Over-Year Analysis</h2>
-<p class="description">Compares a period against the same calendar month(s) one year earlier — never a different month, and never a full year against a partial year. Volume metrics are shown as YoY growth (%); rate and conversion metrics are shown as change in percentage points (pp). Choose Full Funnel to see the whole conversion path in order, or pick a single metric.</p>
+<p class="description">Compares a period against the same calendar month(s) one year earlier. Volume metrics are shown as YoY growth (%); rate and conversion metrics are shown as change in percentage points (pp). Choose Full Funnel to see the whole conversion path in order, or pick a single metric.</p>
 
 <div class="chart-controls">
   <div class="control-group">
@@ -235,7 +235,6 @@
   <div class="control-group">
     <label for="yoy-scope-select">Metric Scope</label>
     <select id="yoy-scope-select">
-      <option value="funnel" selected>Full Funnel</option>
       <option value="one">One Metric</option>
     </select>
   </div>
@@ -254,9 +253,6 @@
 
 <p class="yoy-narrative" id="yoy-narrative"></p>
 
-<p class="yoy-methodology" title="Volumes are shown as YoY growth %. Rates are shown as change in percentage points.">
-  <strong>Methodology:</strong> Year-over-year performance compares the selected period with the same calendar period in the prior year. Volume metrics are reported as percentage change, while rates and conversion metrics are reported as percentage-point change. Marketplace-level ratios are recalculated from their underlying aggregated numerators and denominators rather than averaged across cities. Missing periods are not imputed as zero.
-</p>
 
 <!-- YOY_CONTENT_END -->
       </div>
@@ -413,7 +409,7 @@
 
   // YOY_JS_START
 
-  const yoyFunnelMetrics = ["SHOPPING SESSIONS", "RS/SS", "REQUESTING SESSIONS", "C/RS", "TRIPS", "C/SS"];
+  const yoyFunnelMetrics = __FUNNEL_METRICS__;
   const yoyRatioComponents = {"RS/SS": ["REQUESTING SESSIONS", "SHOPPING SESSIONS"], "C/RS": ["TRIPS", "REQUESTING SESSIONS"], "C/R": ["TRIPS", "REQUESTS"], "C/SS": ["TRIPS", "SHOPPING SESSIONS"]};
   const yoyRatioMetrics = ["ACCEPTANCE RATE", "C/R", "C/RS", "C/SS", "DRIVER CANCELATION", "DRIVER INCENTIVES AND PROMOTIONS (AS % OF GB)", "DRIVER PAYMENTS (AS % OF GB)", "RIDER INCENTIVES AND PROMOTIONS (AS % OF GB)", "RS/SS", "SUPPLY UTILIZATION", "TAKE RATE (AS % OF GB)"];
   const yoyMonthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
