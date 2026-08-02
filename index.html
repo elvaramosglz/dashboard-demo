@@ -225,6 +225,7 @@
         </li>
         <ul class="nav-sublist" id="methodology-sublist">
           <li class="nav-subitem" onclick="openMethodologySection('peer-groups-structural-size', 'Step 1 - Peer Groups by Structural Size', this)">Step 1 - Peer Groups by Structural Size</li>
+          <li class="nav-subitem" onclick="openMethodologySection('own-history-benchmark', 'Step 2 - Own History Benchmark', this)">Step 2 - Own History Benchmark</li>
         </ul>
       </ul>
 
@@ -382,7 +383,7 @@
         document.getElementById('content-frame').src = 'methodology.html#' + hash;
         document.getElementById('content-title').textContent = 'Methodology';
         document.getElementById('breadcrumb-section').textContent = 'Reports';
-        document.getElementById('breadcrumb-current').textContent = 'Step 1 - Peer Groups by Structural Size';
+        document.getElementById('breadcrumb-current').textContent = hash === 'own-history-benchmark' ? 'Step 2 - Own History Benchmark' : 'Step 1 - Peer Groups by Structural Size';
         document.getElementById('nav-methodology').classList.add('active');
       } else if (section === 'dashboard.html') {
         openSection('dashboard.html', 'Performance Explorer', 'Reports');
