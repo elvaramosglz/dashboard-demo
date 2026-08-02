@@ -14,6 +14,12 @@
     --faint: #ADADAD;
     --blue: #2171EC;
     --blue-dark: #1257B8;
+    --ok: #1F8B4C;
+    --ok-bg: #E6F4EC;
+    --bad: #C4291C;
+    --bad-bg: #FBEAE8;
+    --warn: #B7791F;
+    --warn-bg: #FCF6EA;
     --radius: 10px;
     --radius-sm: 6px;
     --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -54,7 +60,7 @@
   .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto 1fr auto;
     gap: 24px;
     min-height: calc(100vh - 80px);
   }
@@ -72,6 +78,7 @@
   .panel-left { grid-column: 1 / 3; grid-row: 1; min-height: 560px; }
   .panel-top-right { grid-column: 1; grid-row: 2; }
   .panel-bottom-right { grid-column: 2; grid-row: 2; }
+  .panel-yoy { grid-column: 1 / 3; grid-row: 3; }
 
   .chart-placeholder {
     flex: 1;
@@ -152,6 +159,21 @@
   }
   .multiselect-panel label:hover { background: var(--canvas); }
   .chart-canvas-wrap { flex: 1; position: relative; min-height: 260px; }
+
+  .yoy-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); margin: 8px 0 16px; }
+  .yoy-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .yoy-table th { background: var(--ink); color: #FFFFFF; text-transform: uppercase; font-size: 11px; letter-spacing: 0.4px; padding: 12px 14px; text-align: left; }
+  .yoy-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 12.5px; }
+  .yoy-table td.yoy-metric-cell { font-family: var(--sans); font-weight: 700; font-size: 13px; }
+  .yoy-table tbody tr:last-child td { border-bottom: none; }
+  .yoy-table tbody tr:hover { background: var(--canvas); }
+  .yoy-change-good { color: var(--ok); font-weight: 700; }
+  .yoy-change-bad { color: var(--bad); font-weight: 700; }
+  .yoy-change-context { color: var(--warn); font-weight: 700; }
+  .yoy-change-neutral { color: var(--ink); font-weight: 700; }
+  .yoy-note { color: var(--muted); font-style: italic; font-family: var(--sans); }
+  .yoy-narrative { margin: 4px 0 16px; padding: 14px 16px; background: var(--canvas); border-left: 4px solid var(--blue); border-radius: var(--radius-sm); font-size: 13px; line-height: 1.6; color: var(--ink); }
+  .yoy-methodology { font-size: 11.5px; color: var(--muted); line-height: 1.5; border-top: 1px solid var(--border); padding-top: 12px; cursor: help; }
 </style>
 </head>
 <body>
@@ -184,6 +206,59 @@
       <div class="panel panel-bottom-right" id="units-distribution">
         <h2>Units Distribution</h2>
         <div class="chart-placeholder">Chart pending connection to real data.</div>
+      </div>
+      <div class="panel panel-yoy" id="year-over-year">
+        <!-- YOY_CONTENT_START -->
+
+<h2>Year-Over-Year Analysis</h2>
+<p class="description">Compares a period against the same calendar month(s) one year earlier — never a different month, and never a full year against a partial year. Volume metrics are shown as YoY growth (%); rate and conversion metrics are shown as change in percentage points (pp). Choose Full Funnel to see the whole conversion path in order, or pick a single metric.</p>
+
+<div class="chart-controls">
+  <div class="control-group">
+    <label for="yoy-month-select">Month</label>
+    <select id="yoy-month-select"><option value="2023-01">Jan-23</option><option value="2023-02">Feb-23</option><option value="2023-03">Mar-23</option><option value="2023-04">Apr-23</option><option value="2023-05">May-23</option><option value="2023-06">Jun-23</option><option value="2023-07">Jul-23</option><option value="2023-08">Aug-23</option><option value="2023-09" selected>Sep-23</option></select>
+  </div>
+  <div class="control-group">
+    <label>Cities</label>
+    <div class="multiselect" id="yoy-city-multiselect">
+      <button type="button" class="multiselect-toggle" id="yoy-city-toggle">All cities</button>
+      <div class="multiselect-panel" id="yoy-city-panel" hidden><label><input type="checkbox" class="yoy-city-checkbox" value="Azteca" checked> Azteca</label><label><input type="checkbox" class="yoy-city-checkbox" value="Lusail" checked> Lusail</label><label><input type="checkbox" class="yoy-city-checkbox" value="Maracanã" checked> Maracanã</label><label><input type="checkbox" class="yoy-city-checkbox" value="Old Trafford" checked> Old Trafford</label><label><input type="checkbox" class="yoy-city-checkbox" value="Rose Bowl" checked> Rose Bowl</label><label><input type="checkbox" class="yoy-city-checkbox" value="San Siro" checked> San Siro</label><label><input type="checkbox" class="yoy-city-checkbox" value="Santiago Bernabeu" checked> Santiago Bernabeu</label><label><input type="checkbox" class="yoy-city-checkbox" value="Vila Belmiro" checked> Vila Belmiro</label></div>
+    </div>
+  </div>
+  <div class="control-group">
+    <label for="yoy-view-select">View</label>
+    <select id="yoy-view-select">
+      <option value="monthly" selected>Monthly</option>
+      <option value="ytd">YTD</option>
+    </select>
+  </div>
+  <div class="control-group">
+    <label for="yoy-scope-select">Metric Scope</label>
+    <select id="yoy-scope-select">
+      <option value="funnel" selected>Full Funnel</option>
+      <option value="one">One Metric</option>
+    </select>
+  </div>
+  <div class="control-group" id="yoy-metric-group" style="display:none;">
+    <label for="yoy-metric-select">Metric</label>
+    <select id="yoy-metric-select"><option value="TRIPS">TRIPS</option><option value="GROSS BOOKINGS (GB)">GROSS BOOKINGS (GB)</option><option value="SHOPPING SESSIONS">SHOPPING SESSIONS</option><option value="RIDERS WITH SESSIONS">RIDERS WITH SESSIONS</option><option value="REQUESTING SESSIONS">REQUESTING SESSIONS</option><option value="REQUESTS">REQUESTS</option><option value="ACTIVE DRIVERS">ACTIVE DRIVERS</option><option value="SUPPLY HOURS">SUPPLY HOURS</option><option value="C/R">C/R</option><option value="C/RS">C/RS</option><option value="RS/SS">RS/SS</option><option value="C/SS">C/SS</option><option value="ACCEPTANCE RATE">ACCEPTANCE RATE</option><option value="DRIVER CANCELATION">DRIVER CANCELATION</option><option value="SUPPLY UTILIZATION">SUPPLY UTILIZATION</option><option value="NPI">NPI</option><option value="DRIVER PAYMENTS (AS % OF GB)">DRIVER PAYMENTS (AS % OF GB)</option><option value="RIDER INCENTIVES AND PROMOTIONS (AS % OF GB)">RIDER INCENTIVES AND PROMOTIONS (AS % OF GB)</option><option value="DRIVER INCENTIVES AND PROMOTIONS (AS % OF GB)">DRIVER INCENTIVES AND PROMOTIONS (AS % OF GB)</option><option value="TAKE RATE (AS % OF GB)">TAKE RATE (AS % OF GB)</option></select>
+  </div>
+</div>
+
+<div class="yoy-table-wrap">
+  <table class="yoy-table" id="yoy-table">
+    <thead id="yoy-table-head"></thead>
+    <tbody id="yoy-table-body"></tbody>
+  </table>
+</div>
+
+<p class="yoy-narrative" id="yoy-narrative"></p>
+
+<p class="yoy-methodology" title="Volumes are shown as YoY growth %. Rates are shown as change in percentage points.">
+  <strong>Methodology:</strong> Year-over-year performance compares the selected period with the same calendar period in the prior year. Volume metrics are reported as percentage change, while rates and conversion metrics are reported as percentage-point change. Marketplace-level ratios are recalculated from their underlying aggregated numerators and denominators rather than averaged across cities. Missing periods are not imputed as zero.
+</p>
+
+<!-- YOY_CONTENT_END -->
       </div>
     </div>
   </div>
@@ -291,7 +366,7 @@
           responsive: true,
           maintainAspectRatio: false,
           interaction: { mode: 'index', intersect: false },
-          layout: { padding: { top: 4, bottom: 8 } },
+          layout: { padding: { top: 8, bottom: 8 } },
           scales: {
             x: {
               title: { display: true, text: 'Month', color: '#6B6F76', font: { size: 12, weight: '600' } },
@@ -310,7 +385,7 @@
             },
             legend: {
               labels: { color: '#121212', font: { size: 12 }, usePointStyle: true, pointStyle: 'circle', padding: 20, boxHeight: 8 },
-              padding: { bottom: 20 },
+              padding: { bottom: 40 },
             },
             tooltip: {
               backgroundColor: '#121212',
@@ -335,6 +410,312 @@
   });
   updateCityToggleLabel();
   renderChart();
+
+  // YOY_JS_START
+
+  const yoyFunnelMetrics = ["SHOPPING SESSIONS", "RS/SS", "REQUESTING SESSIONS", "C/RS", "TRIPS", "C/SS"];
+  const yoyRatioComponents = {"RS/SS": ["REQUESTING SESSIONS", "SHOPPING SESSIONS"], "C/RS": ["TRIPS", "REQUESTING SESSIONS"], "C/R": ["TRIPS", "REQUESTS"], "C/SS": ["TRIPS", "SHOPPING SESSIONS"]};
+  const yoyRatioMetrics = ["ACCEPTANCE RATE", "C/R", "C/RS", "C/SS", "DRIVER CANCELATION", "DRIVER INCENTIVES AND PROMOTIONS (AS % OF GB)", "DRIVER PAYMENTS (AS % OF GB)", "RIDER INCENTIVES AND PROMOTIONS (AS % OF GB)", "RS/SS", "SUPPLY UTILIZATION", "TAKE RATE (AS % OF GB)"];
+  const yoyMonthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const yoyPolarity = {"TRIPS": "good_up", "C/SS": "good_up", "SHOPPING SESSIONS": "good_up", "REQUESTING SESSIONS": "good_up", "REQUESTS": "good_up", "RS/SS": "good_up", "C/RS": "good_up", "C/R": "good_up", "ACCEPTANCE RATE": "good_up", "DRIVER CANCELATION": "bad_up", "SUPPLY UTILIZATION": "context", "TAKE RATE (AS % OF GB)": "context"};
+
+  const yoyMonthSelect = document.getElementById('yoy-month-select');
+  const yoyCityToggle = document.getElementById('yoy-city-toggle');
+  const yoyCityPanel = document.getElementById('yoy-city-panel');
+  const yoyCityCheckboxes = Array.from(document.querySelectorAll('.yoy-city-checkbox'));
+  const yoyViewSelect = document.getElementById('yoy-view-select');
+  const yoyScopeSelect = document.getElementById('yoy-scope-select');
+  const yoyMetricGroup = document.getElementById('yoy-metric-group');
+  const yoyMetricSelect = document.getElementById('yoy-metric-select');
+  const yoyTableHead = document.getElementById('yoy-table-head');
+  const yoyTableBody = document.getElementById('yoy-table-body');
+  const yoyNarrativeEl = document.getElementById('yoy-narrative');
+
+  function yoyMonthLabel(month) {
+    const parts = month.split('-');
+    return yoyMonthNames[parseInt(parts[1], 10) - 1] + '-' + parts[0].slice(2);
+  }
+
+  function yoyPriorYearMonth(month) {
+    const parts = month.split('-');
+    return (parseInt(parts[0], 10) - 1) + '-' + parts[1];
+  }
+
+  function yoySelectedCities() {
+    return yoyCityCheckboxes.filter(function(cb) { return cb.checked; }).map(function(cb) { return cb.value; });
+  }
+
+  function yoyUpdateCityToggleLabel() {
+    const selected = yoySelectedCities();
+    if (selected.length === 0) {
+      yoyCityToggle.textContent = 'No cities selected';
+    } else if (selected.length === chartData.cities.length) {
+      yoyCityToggle.textContent = 'All cities (' + selected.length + ')';
+    } else if (selected.length <= 2) {
+      yoyCityToggle.textContent = selected.join(', ');
+    } else {
+      yoyCityToggle.textContent = selected.length + ' cities selected';
+    }
+  }
+
+  yoyCityToggle.addEventListener('click', function(event) {
+    event.stopPropagation();
+    yoyCityPanel.hidden = !yoyCityPanel.hidden;
+  });
+  document.addEventListener('click', function(event) {
+    if (!yoyCityPanel.hidden && !yoyCityPanel.contains(event.target) && event.target !== yoyCityToggle) {
+      yoyCityPanel.hidden = true;
+    }
+  });
+
+  function yoyGetValue(metric, city, month) {
+    const idx = chartData.months.indexOf(month);
+    if (idx === -1) return null;
+    const series = chartData.metrics[metric] && chartData.metrics[metric][city];
+    if (!series) return null;
+    const value = series[idx];
+    return (value === null || value === undefined) ? null : value;
+  }
+
+  function yoySumMetric(metric, months, cities) {
+    let total = 0;
+    let any = false;
+    cities.forEach(function(city) {
+      months.forEach(function(month) {
+        const value = yoyGetValue(metric, city, month);
+        if (value !== null) { total += value; any = true; }
+      });
+    });
+    return any ? total : null;
+  }
+
+  function yoyAggregateRatio(metric, months, cities) {
+    const components = yoyRatioComponents[metric];
+    if (components) {
+      const denominator = yoySumMetric(components[1], months, cities);
+      if (!denominator) return null;
+      const numerator = yoySumMetric(components[0], months, cities);
+      if (numerator === null) return null;
+      return (numerator / denominator) * 100;
+    }
+    const values = [];
+    cities.forEach(function(city) {
+      months.forEach(function(month) {
+        const value = yoyGetValue(metric, city, month);
+        if (value !== null) values.push(value);
+      });
+    });
+    if (values.length === 0) return null;
+    return values.reduce(function(a, b) { return a + b; }, 0) / values.length;
+  }
+
+  function yoyFormatVolume(value) {
+    if (value === null) return '–';
+    const abs = Math.abs(value);
+    if (abs >= 1000000) return (value / 1000000).toFixed(1) + 'M';
+    if (abs >= 1000) return Math.round(value / 1000) + 'K';
+    return Math.round(value).toString();
+  }
+
+  function yoyFormatRate(value) {
+    return value === null ? '–' : value.toFixed(1) + '%';
+  }
+
+  function yoyComputeRow(metric, currentMonths, priorMonths, cities) {
+    const isRatio = yoyRatioMetrics.indexOf(metric) !== -1;
+    const missingPrior = priorMonths.some(function(m) { return chartData.months.indexOf(m) === -1; });
+    const missingCurrent = currentMonths.some(function(m) { return chartData.months.indexOf(m) === -1; });
+
+    if (missingPrior || missingCurrent) {
+      return {
+        metric: metric, isRatio: isRatio,
+        priorDisplay: '–', currentDisplay: '–',
+        changeDisplay: 'Not comparable — matching prior-year month is unavailable.',
+        change: undefined,
+      };
+    }
+
+    if (isRatio) {
+      const priorValue = yoyAggregateRatio(metric, priorMonths, cities);
+      const currentValue = yoyAggregateRatio(metric, currentMonths, cities);
+      if (priorValue === null || currentValue === null) {
+        return {
+          metric: metric, isRatio: isRatio,
+          priorDisplay: yoyFormatRate(priorValue), currentDisplay: yoyFormatRate(currentValue),
+          changeDisplay: 'Not available — prior-year value is zero.',
+          change: undefined,
+        };
+      }
+      const change = currentValue - priorValue;
+      const sign = change >= 0 ? '+' : '−';
+      return {
+        metric: metric, isRatio: isRatio, change: change,
+        priorDisplay: yoyFormatRate(priorValue), currentDisplay: yoyFormatRate(currentValue),
+        changeDisplay: sign + Math.abs(change).toFixed(1) + ' pp',
+      };
+    }
+
+    const priorValue = yoySumMetric(metric, priorMonths, cities);
+    const currentValue = yoySumMetric(metric, currentMonths, cities);
+    if (!priorValue) {
+      return {
+        metric: metric, isRatio: isRatio,
+        priorDisplay: yoyFormatVolume(priorValue), currentDisplay: yoyFormatVolume(currentValue),
+        changeDisplay: 'Not available — prior-year value is zero.',
+        change: undefined,
+      };
+    }
+    const changePct = (currentValue / priorValue - 1) * 100;
+    const sign = changePct >= 0 ? '+' : '−';
+    return {
+      metric: metric, isRatio: isRatio, change: changePct,
+      priorDisplay: yoyFormatVolume(priorValue), currentDisplay: yoyFormatVolume(currentValue),
+      changeDisplay: sign + Math.abs(changePct).toFixed(1) + '%',
+    };
+  }
+
+  function yoyYtdMonths(targetMonth) {
+    const parts = targetMonth.split('-');
+    const year = parts[0];
+    const lastMo = parseInt(parts[1], 10);
+    const months = [];
+    for (let m = 1; m <= lastMo; m++) {
+      months.push(year + '-' + String(m).padStart(2, '0'));
+    }
+    return months;
+  }
+
+  function yoyBuildPeriods() {
+    const targetMonth = yoyMonthSelect.value;
+    const view = yoyViewSelect.value;
+    if (view === 'ytd') {
+      const currentMonths = yoyYtdMonths(targetMonth);
+      const priorMonths = currentMonths.map(yoyPriorYearMonth);
+      return {
+        currentMonths: currentMonths, priorMonths: priorMonths,
+        priorLabel: yoyMonthLabel(priorMonths[0]) + ' – ' + yoyMonthLabel(priorMonths[priorMonths.length - 1]),
+        currentLabel: yoyMonthLabel(currentMonths[0]) + ' – ' + yoyMonthLabel(currentMonths[currentMonths.length - 1]),
+      };
+    }
+    const priorMonth = yoyPriorYearMonth(targetMonth);
+    return {
+      currentMonths: [targetMonth], priorMonths: [priorMonth],
+      priorLabel: yoyMonthLabel(priorMonth), currentLabel: yoyMonthLabel(targetMonth),
+    };
+  }
+
+  function yoyPolarityClass(metric, change) {
+    if (change === undefined) return 'yoy-change-neutral';
+    const polarity = yoyPolarity[metric];
+    if (polarity === 'good_up') return change >= 0 ? 'yoy-change-good' : 'yoy-change-bad';
+    if (polarity === 'bad_up') return change >= 0 ? 'yoy-change-bad' : 'yoy-change-good';
+    if (polarity === 'context') return 'yoy-change-context';
+    return 'yoy-change-neutral';
+  }
+
+  function yoyRenderTable(periods, metrics) {
+    yoyTableHead.innerHTML =
+      '<tr><th>Metric</th><th>' + periods.priorLabel + '</th><th>' + periods.currentLabel + '</th><th>YoY Change</th></tr>';
+
+    const cities = yoySelectedCities();
+    const rows = metrics.map(function(metric) {
+      return yoyComputeRow(metric, periods.currentMonths, periods.priorMonths, cities);
+    });
+
+    yoyTableBody.innerHTML = rows.map(function(row) {
+      const isNote = row.change === undefined;
+      const changeClass = isNote ? 'yoy-note' : yoyPolarityClass(row.metric, row.change);
+      return (
+        '<tr>' +
+        '<td class="yoy-metric-cell">' + row.metric + '</td>' +
+        '<td>' + row.priorDisplay + '</td>' +
+        '<td>' + row.currentDisplay + '</td>' +
+        '<td class="' + changeClass + '">' + row.changeDisplay + '</td>' +
+        '</tr>'
+      );
+    }).join('');
+
+    return rows;
+  }
+
+  function yoyDirectionWord(change) {
+    return change >= 0 ? 'increased' : 'declined';
+  }
+
+  function yoyDirectionNoun(change) {
+    return change >= 0 ? 'increase' : 'decline';
+  }
+
+  function yoyBuildNarrative(rows) {
+    const byName = {};
+    rows.forEach(function(row) { byName[row.metric] = row; });
+    const needed = ['SHOPPING SESSIONS', 'RS/SS', 'REQUESTING SESSIONS', 'C/RS', 'TRIPS', 'C/SS'];
+    const hasAll = needed.every(function(m) { return byName[m] && byName[m].change !== undefined; });
+    if (!hasAll) {
+      return 'Not enough comparable data is available to build a narrative for this selection.';
+    }
+
+    const ss = byName['SHOPPING SESSIONS'];
+    const rsss = byName['RS/SS'];
+    const rs = byName['REQUESTING SESSIONS'];
+    const crs = byName['C/RS'];
+    const trips = byName['TRIPS'];
+    const css = byName['C/SS'];
+
+    const intentMag = Math.abs(rsss.change);
+    const fulfillmentMag = Math.abs(crs.change);
+    let driver;
+    if (intentMag > fulfillmentMag * 1.2) {
+      driver = 'appears to be primarily driven by the Intent stage (RS/SS) rather than the Fulfillment stage (C/RS)';
+    } else if (fulfillmentMag > intentMag * 1.2) {
+      driver = 'appears to be primarily driven by the Fulfillment stage (C/RS) rather than the Intent stage (RS/SS)';
+    } else {
+      driver = 'may be associated with both the Intent (RS/SS) and Fulfillment (C/RS) stages fairly evenly';
+    }
+
+    return (
+      'Shopping Sessions ' + yoyDirectionWord(ss.change) + ' by ' + Math.abs(ss.change).toFixed(1) + '% year over year. ' +
+      'RS/SS ' + yoyDirectionWord(rsss.change) + ' by ' + Math.abs(rsss.change).toFixed(1) + ' percentage points, which is associated with a ' +
+      Math.abs(rs.change).toFixed(1) + '% ' + yoyDirectionNoun(rs.change) + ' in Requesting Sessions. ' +
+      'C/RS ' + yoyDirectionWord(crs.change) + ' by ' + Math.abs(crs.change).toFixed(1) + ' percentage points. ' +
+      'This suggests the overall change in conversion ' + driver + '. ' +
+      'As a result, Trips ' + yoyDirectionWord(trips.change) + ' by ' + Math.abs(trips.change).toFixed(1) + '%, ' +
+      'and overall C/SS ' + yoyDirectionWord(css.change) + ' by ' + Math.abs(css.change).toFixed(1) + ' percentage points.'
+    );
+  }
+
+  function yoyRender() {
+    const periods = yoyBuildPeriods();
+    const scope = yoyScopeSelect.value;
+    const metrics = scope === 'funnel' ? yoyFunnelMetrics : [yoyMetricSelect.value];
+    const rows = yoyRenderTable(periods, metrics);
+
+    if (scope === 'funnel') {
+      yoyNarrativeEl.style.display = '';
+      yoyNarrativeEl.textContent = yoyBuildNarrative(rows);
+    } else {
+      yoyNarrativeEl.style.display = 'none';
+    }
+  }
+
+  yoyScopeSelect.addEventListener('change', function() {
+    yoyMetricGroup.style.display = yoyScopeSelect.value === 'one' ? '' : 'none';
+    yoyRender();
+  });
+  yoyMonthSelect.addEventListener('change', yoyRender);
+  yoyViewSelect.addEventListener('change', yoyRender);
+  yoyMetricSelect.addEventListener('change', yoyRender);
+  yoyCityCheckboxes.forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      yoyUpdateCityToggleLabel();
+      yoyRender();
+    });
+  });
+
+  yoyUpdateCityToggleLabel();
+  yoyRender();
+
+  // YOY_JS_END
 </script>
 </body>
 </html>
