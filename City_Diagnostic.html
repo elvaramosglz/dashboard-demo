@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketplace Balance Framework -- City Diagnostic</title>
+<style>
+
+  :root{
+    --canvas:#F1F2F4;
+    --surface:#FFFFFF;
+    --border:#DEE1E6;
+    --ink:#121212;
+    --muted:#6B6F76;
+    --blue:#2171EC;
+    --blue-tint:#EAF1FE;
+    --amber:#F59E0B;
+    --red:#C92A2A;
+    --green:#15803D;
+    --radius:10px;
+    --radius-sm:6px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,"Roboto Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:var(--sans);
+    background:var(--canvas);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    position:relative;
+    background:var(--surface);
+    color:var(--ink);
+    max-width:1400px;
+    margin:40px auto 0;
+    padding:30px 32px 28px;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:0 1px 2px rgba(18,18,18,.04);
+    overflow:hidden;
+  }
+  header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:5px;
+    background:var(--blue);
+  }
+  header h1{
+    margin:0 0 6px;
+    font-family:var(--sans);
+    font-size:25px;
+    line-height:1.2;
+    font-weight:800;
+    letter-spacing:-.025em;
+  }
+  header p{
+    margin:0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.55;
+  }
+  .controls{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:22px;
+    flex-wrap:wrap;
+  }
+  select{
+    appearance:none;
+    background-color:var(--surface);
+    color:var(--ink);
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+    padding:11px 42px 11px 14px;
+    font-family:var(--sans);
+    font-size:14px;
+    font-weight:700;
+    min-width:250px;
+    cursor:pointer;
+    outline:none;
+    box-shadow:0 1px 1px rgba(18,18,18,.03);
+    background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+    background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;
+    background-size:5px 5px,5px 5px;
+    background-repeat:no-repeat;
+  }
+  select:hover{border-color:#BFC5CE;}
+  select:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(33,113,236,.12);}
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    min-height:38px;
+    padding:9px 13px;
+    border-radius:var(--radius-sm);
+    font-weight:800;
+    font-size:12px;
+    letter-spacing:.02em;
+    border:1px solid transparent;
+  }
+  .badge.tier1{background:#FDECEC; color:#9F1C1C; border-color:#F3CACA;}
+  .badge.tier2{background:#FFF4DD; color:#8A5200; border-color:#F6D89C;}
+  .badge.tier3{background:var(--blue-tint); color:#1858B8; border-color:#CADBFA;}
+  .badge.tier4{background:#F3F4F6; color:#5F646C; border-color:#DEE1E6;}
+  main{
+    max-width:1400px;
+    margin:0 auto;
+    padding:24px 0 56px;
+  }
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:0 1px 2px rgba(18,18,18,.04);
+    padding:28px 32px 30px;
+    margin-bottom:24px;
+    overflow:hidden;
+  }
+  .card h2{
+    position:relative;
+    color:#FFF;
+    background:var(--ink);
+    margin:-28px -32px 22px;
+    padding:21px 32px 23px;
+    text-align:center;
+    text-transform:uppercase;
+    font-family:var(--sans);
+    font-size:19px;
+    line-height:1.35;
+    font-weight:800;
+    letter-spacing:.075em;
+  }
+  .card h2::before{
+    content:"";
+    position:absolute;
+    left:50%;
+    bottom:0;
+    width:70px;
+    height:4px;
+    transform:translateX(-50%);
+    background:var(--blue);
+    border-radius:4px 4px 0 0;
+  }
+  .card .sub{
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.55;
+    margin:0 0 18px;
+    text-align:center;
+  }
+  table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+    font-size:13px;
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+    overflow:hidden;
+  }
+  th{
+    background:var(--ink);
+    color:#FFF;
+    text-align:left;
+    padding:12px 14px;
+    font-size:11px;
+    line-height:1.35;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.055em;
+    border-right:1px solid #333;
+  }
+  th:last-child{border-right:none;}
+  td{
+    padding:11px 14px;
+    border-bottom:1px solid var(--border);
+    background:#FFF;
+    vertical-align:middle;
+    line-height:1.4;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover td{background:#FAFBFC;}
+  tr.weakest td{background:#FFF8E8; font-weight:700;}
+  tr.weakest td:first-child{border-left:4px solid var(--amber); padding-left:10px;}
+  .num{text-align:right; font-family:var(--mono); font-variant-numeric:tabular-nums;}
+  .result-tag{
+    display:inline-flex;
+    align-items:center;
+    font-weight:800;
+    font-size:11px;
+    padding:4px 8px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .result-weak{background:#FFF0CC; color:#7B4A00; border:1px solid #F3D287;}
+  .result-ok{color:var(--muted); font-weight:500;}
+  .grid2{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:28px;}
+  .kv{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:24px;
+    padding:9px 0;
+    border-bottom:1px solid var(--border);
+    font-size:13px;
+    line-height:1.4;
+  }
+  .kv span:first-child{color:var(--muted);}
+  .kv span:last-child{font-weight:700; text-align:right;}
+  .factor-row{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:7px 14px;
+    align-items:center;
+    padding:8px 0;
+    border-bottom:1px solid var(--border);
+    font-size:13px;
+  }
+  .factor-bar-bg{
+    grid-column:1/3;
+    height:7px;
+    background:#E9ECF0;
+    border-radius:999px;
+    overflow:hidden;
+    margin-bottom:2px;
+  }
+  .factor-bar-fill{height:100%; background:var(--blue); border-radius:999px;}
+  .score-hero{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    align-items:end;
+    gap:20px;
+    background:var(--ink);
+    color:#FFF;
+    border-radius:var(--radius);
+    padding:21px 24px;
+    margin-bottom:22px;
+  }
+  .score-hero > div:last-child{text-align:right;}
+  .score-hero .num-big,
+  .score-hero .rank-big{
+    margin:3px 0 0;
+    font-family:var(--mono);
+    font-size:34px;
+    line-height:1;
+    font-weight:800;
+    letter-spacing:-.04em;
+  }
+  .score-hero .num-big{color:#71A7FF;}
+  .score-hero .rank-big{color:#FFF; margin-left:0;}
+  .flag{
+    display:inline-flex;
+    align-items:center;
+    padding:4px 8px;
+    border-radius:999px;
+    font-size:11px;
+    line-height:1.25;
+    font-weight:800;
+    border:1px solid transparent;
+  }
+  .flag-red{background:#FDECEC; color:#9F1C1C; border-color:#F3CACA;}
+  .flag-ok{background:#F3F4F6; color:#5F646C; border-color:#DEE1E6;}
+  .flag-risk{background:#FFF4DD; color:#8A5200; border-color:#F6D89C;}
+  .action-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  .action-item{
+    min-width:0;
+    padding:16px 17px;
+    background:#FAFBFC;
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+  }
+  .action-item .label{
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.07em;
+    color:var(--muted);
+    font-weight:800;
+    margin-bottom:6px;
+  }
+  .action-item .val{font-size:13px; line-height:1.55; color:var(--ink);}
+  .note{
+    font-size:12px;
+    color:var(--muted);
+    font-style:normal;
+    margin-top:16px;
+    line-height:1.55;
+    padding:12px 14px;
+    background:#F7F8FA;
+    border-left:3px solid var(--blue);
+    border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  }
+  h3{
+    font-family:var(--sans)!important;
+    color:var(--muted)!important;
+    font-size:11px!important;
+    font-weight:800!important;
+    letter-spacing:.065em!important;
+  }
+  footer{
+    max-width:1400px;
+    margin:0 auto 36px;
+    text-align:center;
+    color:var(--muted);
+    background:transparent;
+    font-size:11px;
+    line-height:1.5;
+    padding:4px 24px;
+    border-top:none;
+  }
+  @media (max-width:1464px){
+    header,main,footer{margin-left:24px; margin-right:24px;}
+  }
+  @media (max-width:820px){
+    header{padding:26px 22px 24px; margin-top:24px;}
+    main{padding-top:18px;}
+    .card{padding:24px 20px 26px;}
+    .card h2{margin:-24px -20px 20px; padding:19px 20px 21px; font-size:16px;}
+    .grid2,.action-grid{grid-template-columns:1fr;}
+    .action-item[style*="grid-column"]{grid-column:auto!important;}
+    .score-hero{grid-template-columns:1fr 1fr;}
+    table{display:block; overflow-x:auto; white-space:nowrap;}
+  }
+  @media (max-width:520px){
+    header,main,footer{margin-left:14px; margin-right:14px;}
+    .controls{align-items:stretch;}
+    select{min-width:100%; width:100%;}
+    .badge{width:100%; justify-content:center; text-align:center;}
+    .score-hero{grid-template-columns:1fr;}
+    .score-hero > div:last-child{text-align:left;}
+    .score-hero .num-big,.score-hero .rank-big{font-size:30px;}
+  }
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Marketplace Balance Framework</h1>
+  <p>City Diagnostic -- Classification, Priority, and Recommended Action</p>
+  <div class="controls">
+    <select id="citySelect"></select>
+    <span id="rankBadge" class="badge"></span>
+  </div>
+</header>
+
+<main>
+
+  <div class="card">
+    <h2>A. Classification -- From Five Dimensions to One Constraint</h2>
+    <p class="sub">Classification only -- what is weak. Priority and urgency come next.</p>
+    <table>
+      <thead><tr><th>Dimension</th><th class="num">Own trajectory</th><th class="num">Peer benchmark</th><th class="num">Final score</th><th>Result</th></tr></thead>
+      <tbody id="dimTable"></tbody>
+    </table>
+    <p class="note" id="constraintNote"></p>
+  </div>
+
+  <div class="card" id="insideCard">
+    <h2 id="insideTitle">B. Inside the Constraint</h2>
+    <p class="sub" id="insideSub"></p>
+    <table id="insideTableWrap">
+      <thead><tr><th>Component</th><th class="num">Own trajectory</th><th class="num">Peer benchmark</th><th>Component score</th></tr></thead>
+      <tbody id="insideTable"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>C. Priority -- How Urgent Is It?</h2>
+    <p class="sub">Constraint identifies what is weak. Priority determines where to focus first.</p>
+    <div class="score-hero">
+      <div><div style="font-size:11.5px;color:#94A3B8;text-transform:uppercase;letter-spacing:0.5px;">Priority Score</div><div class="num-big" id="priorityScoreBig">--</div></div>
+      <div><div style="font-size:11.5px;color:#94A3B8;text-transform:uppercase;letter-spacing:0.5px;text-align:right;">Portfolio Rank</div><div class="rank-big" id="rankBig">--</div></div>
+    </div>
+    <div class="grid2">
+      <div>
+        <h3 style="font-size:13.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">Evidence Strength</h3>
+        <div class="kv"><span>Own trajectory</span><span id="evOwn"></span></div>
+        <div class="kv"><span>Peer benchmark</span><span id="evPeer"></span></div>
+        <div class="kv"><span>Absolute guardrail</span><span id="evGuardrail"></span></div>
+        <div class="kv"><span>Base classification</span><span id="evBase"></span></div>
+        <h3 style="font-size:13.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin:16px 0 8px;">Recent Context</h3>
+        <div class="kv"><span>Momentum</span><span id="ctxMomentum"></span></div>
+        <div class="kv"><span>Trajectory</span><span id="ctxTraj"></span></div>
+        <div class="kv"><span>Persistence</span><span id="ctxPersist"></span></div>
+      </div>
+      <div>
+        <h3 style="font-size:13.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">Priority Factors</h3>
+        <div id="factorBars"></div>
+      </div>
+    </div>
+    <p class="note">Final classification: <strong id="finalClassNote"></strong></p>
+  </div>
+
+  <div class="card">
+    <h2>Recommended Next Step</h2>
+    <p class="sub" id="mechanismText"></p>
+    <div class="action-grid">
+      <div class="action-item"><div class="label">Investigation Question</div><div class="val" id="actInvestigation"></div></div>
+      <div class="action-item"><div class="label">Operational Owner</div><div class="val" id="actOwner"></div></div>
+      <div class="action-item"><div class="label">Potential Intervention</div><div class="val" id="actIntervention"></div></div>
+      <div class="action-item"><div class="label">Primary KPI</div><div class="val" id="actKpi"></div></div>
+      <div class="action-item" style="grid-column:1/3;"><div class="label">Guardrails to Protect</div><div class="val" id="actGuardrails"></div></div>
+    </div>
+  </div>
+
+</main>
+
+<footer>Marketplace Balance Framework -- every number on this page is a live lookup from the underlying model, not a separate calculation.</footer>
+
+<script>
+const CITY_DATA = [{"city": "San Siro", "peerGroup": "Large", "confidence": "Normal Confidence", "ownW": 0.5, "peerW": 0.5, "dims": {"Intent": {"own": 0.9142, "peer": 0.856, "final": 0.8851}, "Fulfillment": {"own": 0.9687, "peer": 0.9663, "final": 0.9675}, "Supply": {"own": 0.9518, "peer": "Below Band", "final": 0.9697}, "Experience": {"own": null, "peer": null, "final": 0.8587}, "Economics": {"own": 1.0924, "peer": 0.7401, "final": 0.9162}}, "acceptance": {"own": 0.6385, "peer": 0.7865, "final": 0.7125}, "cancelation": {"own": 1.1885, "peer": 0.8214, "final": 1.005}, "npiLevel": 0.9933, "npiFlag": "Price Parity -- within band of main competitor, no directional signal", "guardrail": "RED -- guardrail breach", "breach": "Acceptance", "finalConstraint": "Experience -- Acceptance Guardrail", "constraintScore": 0.7125, "ownStatus": "Deteriorated (0.64)", "peerStatus": "Deteriorated (0.79)", "momentum": 1.0834, "trajectory": "Improving", "breachCount": 3, "persistence": "Persistent", "baseClass": "Critical Guardrail Breach", "finalClass": "Critical Guardrail Breach -- Recovering (Persistent)", "mechanism": "Acceptance is the breached component. Possible mechanisms (not confirmed): offer attractiveness, pickup distance, driver economics, dispatch quality, destination mix, or request saturation.", "investigation": "Are rejected offers concentrated in specific pickup distances, destinations, or times, pointing to an offer-attractiveness or dispatch issue?", "owner": "Matching / Driver Ops", "intervention": "Dispatch ranking change; pickup information improvements; targeted driver incentive; offer presentation change.", "primaryKpi": "Acceptance Rate", "expGuardrails": "Cancelation, C/RS, NPI, Take Rate", "severity": 0.2875, "scale": 2.3982, "persistF": 1.2, "trajF": 0.85, "guardF": 1.4, "priorityScore": 0.9987, "rank": 1, "tier": "Tier 1 -- Immediate Action"}, {"city": "Old Trafford", "peerGroup": "Large", "confidence": "Normal Confidence", "ownW": 0.5, "peerW": 0.5, "dims": {"Intent": {"own": 0.9876, "peer": 0.9938, "final": 0.9907}, "Fulfillment": {"own": 0.9915, "peer": 0.9871, "final": 0.9893}, "Supply": {"own": 0.9316, "peer": "Below Band", "final": 0.9543}, "Experience": {"own": null, "peer": null, "final": 1.0232}, "Economics": {"own": 1.0202, "peer": 1.1186, "final": 1.0694}}, "acceptance": {"own": 0.7405, "peer": 0.9524, "final": 0.8464}, "cancelation": {"own": 1.6301, "peer": 0.98, "final": 1.2}, "npiLevel": 1.01, "npiFlag": "Price Parity -- within band of main competitor, no directional signal", "guardrail": "RED -- guardrail breach", "breach": "Acceptance", "finalConstraint": "Experience -- Acceptance Guardrail", "constraintScore": 0.8464, "ownStatus": "Deteriorated (0.74)", "peerStatus": "Healthy (0.95)", "momentum": 0.9882, "trajectory": "Stable", "breachCount": 3, "persistence": "Persistent", "baseClass": "Critical Guardrail Breach", "finalClass": "Critical Guardrail Breach -- Stable (Persistent)", "mechanism": "Acceptance is the breached component. Possible mechanisms (not confirmed): offer attractiveness, pickup distance, driver economics, dispatch quality, destination mix, or request saturation.", "investigation": "Are rejected offers concentrated in specific pickup distances, destinations, or times, pointing to an offer-attractiveness or dispatch issue?", "owner": "Matching / Driver Ops", "intervention": "Dispatch ranking change; pickup information improvements; targeted driver incentive; offer presentation change.", "primaryKpi": "Acceptance Rate", "expGuardrails": "Cancelation, C/RS, NPI, Take Rate", "severity": 0.1536, "scale": 3, "persistF": 1.2, "trajF": 1, "guardF": 1.4, "priorityScore": 0.78, "rank": 2, "tier": "Tier 1 -- Immediate Action"}, {"city": "Vila Belmiro", "peerGroup": "Medium", "confidence": "Low Confidence -- only 1 effective peer", "ownW": 0.7, "peerW": 0.3, "dims": {"Intent": {"own": 0.9428, "peer": 0.8494, "final": 0.9147}, "Fulfillment": {"own": 1.0083, "peer": 1.0, "final": 1.0058}, "Supply": {"own": 0.9618, "peer": "Within Band", "final": 1}, "Experience": {"own": null, "peer": null, "final": 1.0379}, "Economics": {"own": 0.5922, "peer": 0.5825, "final": 0.5893}}, "acceptance": {"own": 1.0133, "peer": 0.8493, "final": 0.9641}, "cancelation": {"own": 1.1595, "peer": 1, "final": 1.1116}, "npiLevel": 1.03, "npiFlag": "Price Parity -- within band of main competitor, no directional signal", "guardrail": "OK", "breach": "None", "finalConstraint": "Economics", "constraintScore": 0.5893, "ownStatus": "Deteriorated (0.59)", "peerStatus": "Deteriorated (0.58)", "momentum": 0.7752, "trajectory": "Worsening", "breachCount": 3, "persistence": "Persistent", "baseClass": "Critical Constraint", "finalClass": "Critical Constraint -- Accelerating (Persistent) (Low Confidence Peer Benchmark)", "mechanism": "Primary metric is Take Rate. Possible mechanisms (not confirmed): fee architecture, incentive dependence, product mix, low GB/trip, or pricing compression.", "investigation": "Is the Take Rate gap driven by incentive spend, fee structure, or product/GB mix -- and does Step 7 show NPI already above the competitor (added monetization risk) or below it (some headroom)?", "owner": "Pricing / Finance / Incentive Design", "intervention": "Controlled pricing or fee test; incentive efficiency review; portfolio mix review; monetization by cohort.", "primaryKpi": "Take Rate", "expGuardrails": "NPI, Intent, Fulfillment, Acceptance, Cancelation", "severity": 0.4107, "scale": 1.1305, "persistF": 1.2, "trajF": 1.25, "guardF": 1, "priorityScore": 0.6752, "rank": 3, "tier": "Tier 2 -- Deep Dive / Experiment Design"}, {"city": "Rose Bowl", "peerGroup": "Small", "confidence": "Normal Confidence", "ownW": 0.5, "peerW": 0.5, "dims": {"Intent": {"own": 1.0449, "peer": 1.0769, "final": 1.0609}, "Fulfillment": {"own": 1.0153, "peer": 1.0469, "final": 1.0311}, "Supply": {"own": 0.9538, "peer": "Below Band", "final": 0.9825}, "Experience": {"own": null, "peer": null, "final": 1.2}, "Economics": {"own": 0.6435, "peer": 0.8496, "final": 0.7465}}, "acceptance": {"own": 1.0183, "peer": 1.3857, "final": 1.2}, "cancelation": {"own": 1.1313, "peer": 1.3214, "final": 1.2}, "npiLevel": 1.06, "npiFlag": "Monetization Compounding Risk -- already pricing above competitor; further Take Rate increases add Intent risk", "guardrail": "OK", "breach": "None", "finalConstraint": "Economics", "constraintScore": 0.7465, "ownStatus": "Deteriorated (0.64)", "peerStatus": "Deteriorated (0.85)", "momentum": 1.3505, "trajectory": "Improving", "breachCount": 3, "persistence": "Persistent", "baseClass": "Critical Constraint", "finalClass": "Critical Constraint -- Recovering (Persistent)", "mechanism": "Primary metric is Take Rate. Possible mechanisms (not confirmed): fee architecture, incentive dependence, product mix, low GB/trip, or pricing compression.", "investigation": "Is the Take Rate gap driven by incentive spend, fee structure, or product/GB mix -- and does Step 7 show NPI already above the competitor (added monetization risk) or below it (some headroom)?", "owner": "Pricing / Finance / Incentive Design", "intervention": "Controlled pricing or fee test; incentive efficiency review; portfolio mix review; monetization by cohort.", "primaryKpi": "Take Rate", "expGuardrails": "NPI, Intent, Fulfillment, Acceptance, Cancelation", "severity": 0.2535, "scale": 0.6493, "persistF": 1.2, "trajF": 0.85, "guardF": 1, "priorityScore": 0.17, "rank": 4, "tier": "Tier 2 -- Deep Dive / Experiment Design"}, {"city": "Santiago Bernabeu", "peerGroup": "Small", "confidence": "Normal Confidence", "ownW": 0.5, "peerW": 0.5, "dims": {"Intent": {"own": 1.0219, "peer": 1.1085, "final": 1.0652}, "Fulfillment": {"own": 1.0714, "peer": 0.9761, "final": 1.0237}, "Supply": {"own": 0.9332, "peer": "Below Band", "final": 0.9752}, "Experience": {"own": null, "peer": null, "final": 1.1557}, "Economics": {"own": 0.8369, "peer": 0.8521, "final": 0.8445}}, "acceptance": {"own": 1.301, "peer": 0.9811, "final": 1.141}, "cancelation": {"own": 1.2795, "peer": 1.0612, "final": 1.1704}, "npiLevel": 1.0333, "npiFlag": "Monetization Compounding Risk -- already pricing above competitor; further Take Rate increases add Intent risk", "guardrail": "OK", "breach": "None", "finalConstraint": "Economics", "constraintScore": 0.8445, "ownStatus": "Deteriorated (0.84)", "peerStatus": "Deteriorated (0.85)", "momentum": 1.2407, "trajectory": "Improving", "breachCount": 3, "persistence": "Persistent", "baseClass": "Critical Constraint", "finalClass": "Critical Constraint -- Recovering (Persistent)", "mechanism": "Primary metric is Take Rate. Possible mechanisms (not confirmed): fee architecture, incentive dependence, product mix, low GB/trip, or pricing compression.", "investigation": "Is the Take Rate gap driven by incentive spend, fee structure, or product/GB mix -- and does Step 7 show NPI already above the competitor (added monetization risk) or below it (some headroom)?", "owner": "Pricing / Finance / Incentive Design", "intervention": "Controlled pricing or fee test; incentive efficiency review; portfolio mix review; monetization by cohort.", "primaryKpi": "Take Rate", "expGuardrails": "NPI, Intent, Fulfillment, Acceptance, Cancelation", "severity": 0.1555, "scale": 0.851, "persistF": 1.2, "trajF": 0.85, "guardF": 1, "priorityScore": 0.136, "rank": 5, "tier": "Tier 3 -- Monitor / Validate"}, {"city": "Maracana", "peerGroup": "Large", "confidence": "Normal Confidence", "ownW": 0.5, "peerW": 0.5, "dims": {"Intent": {"own": 1.0396, "peer": 1.1663, "final": 1.1029}, "Fulfillment": {"own": 1.0264, "peer": 1.0478, "final": 1.0371}, "Supply": {"own": 0.8881, "peer": "Below Band", "final": 0.9187}, "Experience": {"own": null, "peer": null, "final": 1.1854}, "Economics": {"own": 1.161, "peer": 1.1808, "final": 1.1709}}, "acceptance": {"own": 1.0349, "peer": 1.3067, "final": 1.1708}, "cancelation": {"own": 1.3118, "peer": 1.2619, "final": 1.2}, "npiLevel": 1.0467, "npiFlag": "Premium Pricing -- above competitor, no immediate constraint link", "guardrail": "OK", "breach": "None", "finalConstraint": "Supply", "constraintScore": 0.9187, "ownStatus": "Deteriorated (0.89)", "peerStatus": "Deteriorated (0.92)", "momentum": 1.0859, "trajectory": "Underutilization Improving", "breachCount": 3, "persistence": "Persistent", "baseClass": "Critical Constraint", "finalClass": "Critical Constraint -- Underutilization Improving (Persistent)", "mechanism": "Utilization is BELOW its own historical band. Possible mechanisms (not confirmed): excess supply, weak demand, poorly targeted incentives, or drivers online in the wrong locations/hours.", "investigation": "Is under-utilization driven by a demand shortfall (Intent side) or by oversupplied incentives independent of demand?", "owner": "Driver Ops / Incentive Design", "intervention": "Reduce broad incentives; incentive retargeting; demand stimulation only if justified by Intent data.", "primaryKpi": "Supply Utilization (band position)", "expGuardrails": "C/RS, Acceptance, Cancelation, NPI, Take Rate", "severity": 0.0813, "scale": 1.5242, "persistF": 1.2, "trajF": 0.85, "guardF": 1, "priorityScore": 0.1269, "rank": 6, "tier": "Tier 3 -- Monitor / Validate"}, {"city": "Lusail", "peerGroup": "Small", "confidence": "Normal Confidence", "ownW": 0.5, "peerW": 0.5, "dims": {"Intent": {"own": 0.9231, "peer": 0.8304, "final": 0.8768}, "Fulfillment": {"own": 0.996, "peer": 0.9781, "final": 0.9871}, "Supply": {"own": 0.9452, "peer": "Below Band", "final": 0.9582}, "Experience": {"own": null, "peer": null, "final": 0.8358}, "Economics": {"own": 1.306, "peer": 1.3507, "final": 1.2}}, "acceptance": {"own": 0.9258, "peer": 0.7086, "final": 0.8172}, "cancelation": {"own": 0.975, "peer": 0.7339, "final": 0.8544}, "npiLevel": 1.0433, "npiFlag": "Premium Pricing -- above competitor, no immediate constraint link", "guardrail": "OK", "breach": "None", "finalConstraint": "Experience", "constraintScore": 0.8358, "ownStatus": "Deteriorated (0.93)", "peerStatus": "Deteriorated (0.71)", "momentum": 1.0254, "trajectory": "Stable", "breachCount": 1, "persistence": "Emerging / Isolated", "baseClass": "Critical Constraint", "finalClass": "Critical Constraint -- Stable", "mechanism": "Acceptance is the breached component. Possible mechanisms (not confirmed): offer attractiveness, pickup distance, driver economics, dispatch quality, destination mix, or request saturation.", "investigation": "Are rejected offers concentrated in specific pickup distances, destinations, or times, pointing to an offer-attractiveness or dispatch issue?", "owner": "Matching / Driver Ops", "intervention": "Dispatch ranking change; pickup information improvements; targeted driver incentive; offer presentation change.", "primaryKpi": "Acceptance Rate", "expGuardrails": "Cancelation, C/RS, NPI, Take Rate", "severity": 0.1642, "scale": 0.6135, "persistF": 0.9, "trajF": 1, "guardF": 1.1, "priorityScore": 0.1005, "rank": 7, "tier": "Tier 4 -- Healthy / No Immediate Action"}, {"city": "Azteca", "peerGroup": "Medium", "confidence": "Low Confidence -- only 1 effective peer", "ownW": 0.7, "peerW": 0.3, "dims": {"Intent": {"own": 1.0109, "peer": 1.1773, "final": 1.0609}, "Fulfillment": {"own": 1.0005, "peer": 1.0, "final": 1.0004}, "Supply": {"own": 0.9364, "peer": "Below Band", "final": 0.9545}, "Experience": {"own": null, "peer": null, "final": 1.0707}, "Economics": {"own": 0.813, "peer": 1.7168, "final": 1.0842}}, "acceptance": {"own": 0.9264, "peer": 1.1774, "final": 1.0017}, "cancelation": {"own": 1.1997, "peer": 1, "final": 1.1398}, "npiLevel": 1.0133, "npiFlag": "Price Parity -- within band of main competitor, no directional signal", "guardrail": "OK", "breach": "None", "finalConstraint": "Supply", "constraintScore": 0.9545, "ownStatus": "Deteriorated (0.94)", "peerStatus": "Healthy (0.95)", "momentum": 1.047, "trajectory": "Underutilization Stable", "breachCount": 3, "persistence": "Persistent", "baseClass": "Deteriorating", "finalClass": "Deteriorating -- Underutilization Stable (Persistent) (Low Confidence Peer Benchmark)", "mechanism": "Utilization is BELOW its own historical band. Possible mechanisms (not confirmed): excess supply, weak demand, poorly targeted incentives, or drivers online in the wrong locations/hours.", "investigation": "Is under-utilization driven by a demand shortfall (Intent side) or by oversupplied incentives independent of demand?", "owner": "Driver Ops / Incentive Design", "intervention": "Reduce broad incentives; incentive retargeting; demand stimulation only if justified by Intent data.", "primaryKpi": "Supply Utilization (band position)", "expGuardrails": "C/RS, Acceptance, Cancelation, NPI, Take Rate", "severity": 0.0455, "scale": 0.8695, "persistF": 1.2, "trajF": 1, "guardF": 1, "priorityScore": 0.0452, "rank": 8, "tier": "Tier 4 -- Healthy / No Immediate Action"}];
+
+function pct(x){ return (typeof x === 'number') ? (x*100).toFixed(1) + '%' : (x ?? '--'); }
+function ratio(x){ return (typeof x === 'number') ? x.toFixed(2) : (x ?? '--'); }
+
+function tierClass(tier){
+  if(tier.includes('Tier 1')) return 'tier1';
+  if(tier.includes('Tier 2')) return 'tier2';
+  if(tier.includes('Tier 3')) return 'tier3';
+  return 'tier4';
+}
+
+function dimResultTag(dimKey, city){
+  const isWeakest = city.finalConstraint.includes(dimKey) || (dimKey==='Experience' && city.finalConstraint.includes('Experience'));
+  if(isWeakest){
+    return `<span class="result-tag result-weak">Weakest dimension</span>`;
+  }
+  return `<span class="result-ok">Not the constraint</span>`;
+}
+
+function renderCity(city){
+  // Rank badge
+  const badge = document.getElementById('rankBadge');
+  badge.className = 'badge ' + tierClass(city.tier);
+  badge.textContent = `Rank #${city.rank} -- ${city.tier}`;
+
+  // A. Classification table
+  const order = ['Intent','Fulfillment','Supply','Experience','Economics'];
+  const dimTable = document.getElementById('dimTable');
+  dimTable.innerHTML = order.map(k => {
+    const d = city.dims[k];
+    const isWeakest = city.finalConstraint.includes(k);
+    let ownCell, peerCell;
+    if(k==='Supply'){
+      ownCell = ratio(d.own);
+      peerCell = 'Context only';
+    } else if(k==='Experience'){
+      ownCell = 'Component-level';
+      peerCell = 'Component-level';
+    } else {
+      ownCell = ratio(d.own);
+      peerCell = ratio(d.peer);
+    }
+    return `<tr class="${isWeakest ? 'weakest' : ''}">
+      <td>${k}</td><td class="num">${ownCell}</td><td class="num">${peerCell}</td>
+      <td class="num">${ratio(d.final)}</td>
+      <td>${isWeakest ? '<span class="result-tag result-weak">Weakest dimension</span>' : '<span class="result-ok">Not the constraint</span>'}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('constraintNote').innerHTML =
+    `Preliminary constraint: <strong>${city.finalConstraint}</strong>` +
+    (city.guardrail.includes('RED') ? ` &nbsp;|&nbsp; <span class="flag flag-red">Guardrail RED -- ${city.breach} breach</span>` : ` &nbsp;|&nbsp; <span class="flag flag-ok">Guardrail OK</span>`) +
+    (city.npiFlag.includes('Risk') ? ` &nbsp;|&nbsp; <span class="flag flag-risk">${city.npiFlag}</span>` : '');
+
+  // B. Inside the constraint
+  const insideTitle = document.getElementById('insideTitle');
+  const insideSub = document.getElementById('insideSub');
+  const insideTable = document.getElementById('insideTable');
+  const wrap = document.getElementById('insideTableWrap');
+
+  if(city.finalConstraint.includes('Experience')){
+    insideTitle.textContent = 'B. Inside Experience';
+    insideSub.textContent = 'Experience = 50% Acceptance score + 50% Cancelation score = ' + ratio(city.dims.Experience.final);
+    wrap.style.display = '';
+    insideTable.innerHTML = `
+      <tr><td>Acceptance Rate</td><td class="num">${ratio(city.acceptance.own)}</td><td class="num">${ratio(city.acceptance.peer)}</td>
+        <td>${ratio(city.acceptance.final)} -- ${city.acceptance.final < 0.85 ? 'Deteriorated' : 'Healthy'}</td></tr>
+      <tr><td>Driver Cancelation</td><td class="num">${ratio(city.cancelation.own)}</td><td class="num">${ratio(city.cancelation.peer)}</td>
+        <td>${ratio(city.cancelation.final)} -- ${city.cancelation.final < 0.85 ? 'Deteriorated' : 'Not the primary issue'}</td></tr>`;
+  } else if(city.finalConstraint === 'Supply'){
+    insideTitle.textContent = 'B. Inside Supply';
+    insideSub.textContent = 'Supply uses an operating band (own-history P25-P75), not a simple peer ratio -- Utilization is non-monotonic.';
+    wrap.style.display = '';
+    insideTable.innerHTML = `<tr><td>Supply Utilization</td><td class="num">${ratio(city.dims.Supply.own)}</td><td>${city.dims.Supply.peer}</td>
+      <td>${ratio(city.dims.Supply.final)} -- Band Score</td></tr>`;
+  } else if(city.finalConstraint === 'Economics'){
+    insideTitle.textContent = 'B. Inside Economics';
+    insideSub.textContent = 'Take Rate is an outcome, not a root cause -- decompose before selecting a lever.';
+    wrap.style.display = '';
+    insideTable.innerHTML = `<tr><td>Take Rate</td><td class="num">${ratio(city.dims.Economics.own)}</td><td class="num">${ratio(city.dims.Economics.peer)}</td>
+      <td>${ratio(city.dims.Economics.final)} -- ${city.dims.Economics.final < 0.95 ? 'Deteriorated' : 'Healthy'}</td></tr>
+      <tr><td>NPI (price vs. main competitor)</td><td class="num" colspan="2">${ratio(city.npiLevel)}</td><td>${city.npiFlag}</td></tr>`;
+  } else {
+    insideTitle.textContent = `B. Inside ${city.finalConstraint}`;
+    insideSub.textContent = `${city.finalConstraint} is a single-metric dimension -- no sub-components to decompose.`;
+    wrap.style.display = '';
+    const d = city.dims[city.finalConstraint];
+    insideTable.innerHTML = `<tr><td>${city.finalConstraint}</td><td class="num">${ratio(d.own)}</td><td class="num">${ratio(d.peer)}</td><td>${ratio(d.final)}</td></tr>`;
+  }
+
+  // C. Priority
+  document.getElementById('priorityScoreBig').textContent = ratio(city.priorityScore);
+  document.getElementById('rankBig').textContent = '#' + city.rank;
+  document.getElementById('evOwn').textContent = city.ownStatus;
+  document.getElementById('evPeer').textContent = city.peerStatus;
+  document.getElementById('evGuardrail').innerHTML = city.guardrail.includes('RED') ? '<span class="flag flag-red">Breached</span>' : '<span class="flag flag-ok">OK</span>';
+  document.getElementById('evBase').textContent = city.baseClass;
+  document.getElementById('ctxMomentum').textContent = ratio(city.momentum);
+  document.getElementById('ctxTraj').textContent = city.trajectory;
+  document.getElementById('ctxPersist').textContent = `${city.persistence} (${city.breachCount}/3 recent months)`;
+  document.getElementById('finalClassNote').textContent = city.finalClass;
+
+  const factors = [
+    ['Severity', city.severity, 1.0],
+    ['Scale', city.scale, 3.0],
+    ['Persistence factor', city.persistF, 1.2],
+    ['Trajectory factor', city.trajF, 1.25],
+    ['Guardrail factor', city.guardF, 1.4],
+  ];
+  document.getElementById('factorBars').innerHTML = factors.map(([label, val, max]) => `
+    <div class="factor-row">
+      <span>${label}</span><span class="num">${ratio(val)}</span>
+      <div class="factor-bar-bg"><div class="factor-bar-fill" style="width:${Math.min(100, (val/max)*100)}%"></div></div>
+    </div>`).join('');
+
+  // Recommended action
+  document.getElementById('mechanismText').textContent = city.mechanism;
+  document.getElementById('actInvestigation').textContent = city.investigation;
+  document.getElementById('actOwner').textContent = city.owner;
+  document.getElementById('actIntervention').textContent = city.intervention;
+  document.getElementById('actKpi').textContent = city.primaryKpi;
+  document.getElementById('actGuardrails').textContent = city.expGuardrails;
+}
+
+// Init
+const select = document.getElementById('citySelect');
+CITY_DATA.forEach(c => {
+  const opt = document.createElement('option');
+  opt.value = c.city;
+  opt.textContent = `#${c.rank} -- ${c.city}`;
+  select.appendChild(opt);
+});
+select.addEventListener('change', () => {
+  const city = CITY_DATA.find(c => c.city === select.value);
+  renderCity(city);
+});
+renderCity(CITY_DATA[0]);
+</script>
+
+</body>
+</html>
